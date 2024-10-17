@@ -38,10 +38,9 @@ public class HiFive extends CardGame {
         this.scores = new int[config.NB_PLAYERS];
         this.autoIndexHands = new int[config.NB_PLAYERS];
         this.cardManager = new CardManager(random, config);
-        this.playerStrategies = new PlayerStrategy[config.NB_PLAYERS];
         this.gameUI = new UIManager(config, this);
-        initializeScoringStrategies();
-        initializePlayerStrategies();
+        this.scoringStrategies = ScoringStrategyFactory.createScoringStrategies(config);
+        this.playerStrategies = PlayerStrategyFactory.createPlayerStrategies(config);
     }
 
     // Game initialization methods
@@ -215,21 +214,6 @@ public class HiFive extends CardGame {
     private int scoreForHiFive(int playerIndex) {
         List<Card> privateCards = hands[playerIndex].getCardList();
         return scoringStrategies.stream().mapToInt(strategy -> strategy.calculateScore(privateCards)).max().orElse(0);
-    }
-
-    private void initializeScoringStrategies() {
-        scoringStrategies = new ArrayList<>();
-        scoringStrategies.add(new FiveScoring(config.FIVE_GOAL, config.FIVE_POINTS));
-        scoringStrategies.add(new SumFiveScoring(config.FIVE_GOAL, config.SUM_FIVE_POINTS));
-        scoringStrategies.add(new DifferenceFiveScoring(config.FIVE_GOAL, config.DIFFERENCE_FIVE_POINTS));
-        scoringStrategies.add(new NoneFiveScoring());
-    }
-
-    private void initializePlayerStrategies() {
-        for(int i = 0; i < config.NB_PLAYERS; i++) {
-            String playerType = config.properties.getProperty("players." + i, "random").trim().toLowerCase();
-            playerStrategies[i] = PlayerStrategyFactory.createStrategy(playerType, config);
-        }
     }
 
     private void updateScore(int player) {
