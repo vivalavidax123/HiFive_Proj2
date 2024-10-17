@@ -7,22 +7,29 @@ import java.util.*;
 @SuppressWarnings("serial")
 public class HiFive extends CardGame {
 
+    // Configuration and game setup
     private final GameConfigurations config;
     private final Random random;
     private final Deck deck;
+    private final CardManager cardManager;
+    private final UIManager gameUI;
+
+    // Player-related fields
     private final int[] scores;
     private final int[] autoIndexHands;
-    private final LogManager logManager = new LogManager();
-    private final List<List<String>> playerAutoMovements = new ArrayList<>();
-    private final CardManager cardManager;
     private final PlayerStrategy[] playerStrategies;
-    private final UIManager gameUI;
+    private final List<List<String>> playerAutoMovements = new ArrayList<>();
+    // Logging
+    private final LogManager logManager = new LogManager();
+    // Game state
     private Hand[] hands;
     private Hand playingArea;
     private Hand pack;
     private Card selected;
+    // Scoring
     private List<ScoringStrategy> scoringStrategies;
 
+    // Constructor
     public HiFive(Properties properties) {
         super(700, 700, 30);
         this.config = new GameConfigurations(properties);
@@ -37,13 +44,7 @@ public class HiFive extends CardGame {
         initializePlayerStrategies();
     }
 
-/*    // return random Enum value
-    public <T extends Enum<?>> T randomEnum(Class<T> clazz) {
-        int x = random.nextInt(clazz.getEnumConstants().length);
-        return clazz.getEnumConstants()[x];
-    }*/
-
-    // ==================== 2. Game Setup and Initialization ====================
+    // Game initialization methods
     private void initGame() {
         hands = new Hand[config.NB_PLAYERS];
         for(int i = 0; i < config.NB_PLAYERS; i++) {
@@ -56,7 +57,6 @@ public class HiFive extends CardGame {
             hands[i].sort(Hand.SortType.SUITPRIORITY, false);
         }
 
-        // Set up human player for interaction
         CardListener cardListener = new CardAdapter() {
             public void leftDoubleClicked(Card card) {
                 selected = card;
@@ -122,7 +122,7 @@ public class HiFive extends CardGame {
         }
     }
 
-    // ==================== 3. Game Logic ====================
+    // Main game loop
     private void playGame() {
         int roundNumber = 1;
         for(int i = 0; i < config.NB_PLAYERS; i++)
@@ -148,7 +148,6 @@ public class HiFive extends CardGame {
                     autoIndexHands[nextPlayer] = nextPlayerAutoIndex;
                     Hand nextHand = hands[nextPlayer];
 
-                    // Apply movement for player
                     selected = cardManager.applyAutoMovement(nextHand, nextMovement);
                     delay(config.delayTime);
                     if(selected != null) {
@@ -182,7 +181,7 @@ public class HiFive extends CardGame {
             logManager.addCardPlayedToLog(nextPlayer, hands[nextPlayer].getCardList());
             if(selected != null) {
                 cardsPlayed.add(selected);
-                selected.setVerso(false);  // In case it is upside down
+                selected.setVerso(false);
                 delay(config.delayTime);
             }
 
@@ -206,6 +205,7 @@ public class HiFive extends CardGame {
         }
     }
 
+    // Scoring methods
     private void calculateScoreEndOfRound() {
         for(int i = 0; i < hands.length; i++) {
             scores[i] = scoreForHiFive(i);
@@ -225,12 +225,18 @@ public class HiFive extends CardGame {
         scoringStrategies.add(new NoneFiveScoring());
     }
 
-    // ==================== 5. UI and Graphics ====================
+    private void initializePlayerStrategies() {
+        for(int i = 0; i < config.NB_PLAYERS; i++) {
+            String playerType = config.properties.getProperty("players." + i, "random").trim().toLowerCase();
+            playerStrategies[i] = PlayerStrategyFactory.createStrategy(playerType, config);
+        }
+    }
+
     private void updateScore(int player) {
         gameUI.updateScore(player, scores[player]);
     }
 
-    // ==================== 8. Main Game Control ====================
+    // Main application method
     public String runApp() {
         setTitle("HiFive (V" + config.VERSION + ") Constructed for UofM SWEN30006 with JGameGrid (www.aplu.ch)");
         gameUI.setStatus("Initializing...");
@@ -252,17 +258,5 @@ public class HiFive extends CardGame {
         logManager.addEndOfGameToLog(scores, winners);
 
         return logManager.getLogResult();
-    }
-
-    @Override
-    public String getVersion() {
-        return config.VERSION;
-    }
-
-    private void initializePlayerStrategies() {
-        for(int i = 0; i < config.NB_PLAYERS; i++) {
-            String playerType = config.properties.getProperty("players." + i, "random").trim().toLowerCase();
-            playerStrategies[i] = PlayerStrategyFactory.createStrategy(playerType, config);
-        }
     }
 }
