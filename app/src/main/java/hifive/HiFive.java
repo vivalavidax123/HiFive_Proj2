@@ -1,27 +1,22 @@
 package hifive;
 
 import ch.aplu.jcardgame.*;
-import ch.aplu.jgamegrid.Actor;
-import ch.aplu.jgamegrid.TextActor;
 
-import java.awt.*;
-import java.util.List;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @SuppressWarnings("serial")
 public class HiFive extends CardGame {
 
-    private final GameConfig config;
+    private final GameConfigurations config;
     private final Random random;
     private final Deck deck;
-    private final Actor[] scoreActors;
     private final int[] scores;
     private final int[] autoIndexHands;
     private final LogManager logManager = new LogManager();
     private final List<List<String>> playerAutoMovements = new ArrayList<>();
     private final CardManager cardManager;
     private final PlayerStrategy[] playerStrategies;
+    private final UIManager gameUI;
     private Hand[] hands;
     private Hand playingArea;
     private Hand pack;
@@ -30,14 +25,14 @@ public class HiFive extends CardGame {
 
     public HiFive(Properties properties) {
         super(700, 700, 30);
-        this.config = new GameConfig(properties);
+        this.config = new GameConfigurations(properties);
         this.random = new Random(config.SEED);
         this.deck = new Deck(Suit.values(), Rank.values(), "cover");
-        this.scoreActors = new Actor[config.NB_PLAYERS];
         this.scores = new int[config.NB_PLAYERS];
         this.autoIndexHands = new int[config.NB_PLAYERS];
         this.cardManager = new CardManager(random, config);
         this.playerStrategies = new PlayerStrategy[config.NB_PLAYERS];
+        this.gameUI = new UIManager(config, this);
         initializeScoringStrategies();
         initializePlayerStrategies();
     }
@@ -56,8 +51,6 @@ public class HiFive extends CardGame {
         }
         playingArea = new Hand(deck);
         dealingOut(hands);
-        playingArea.setView(this, new RowLayout(config.TRICK_LOCATION, (playingArea.getNumberOfCards() + 2) * config.TRICK_WIDTH));
-        playingArea.draw();
 
         for(int i = 0; i < config.NB_PLAYERS; i++) {
             hands[i].sort(Hand.SortType.SUITPRIORITY, false);
@@ -72,23 +65,11 @@ public class HiFive extends CardGame {
         };
         hands[0].addCardListener(cardListener);
 
-        // graphics
-        RowLayout[] layouts = new RowLayout[config.NB_PLAYERS];
-        for(int i = 0; i < config.NB_PLAYERS; i++) {
-            layouts[i] = new RowLayout(config.HAND_LOCATIONS[i], config.HAND_WIDTH);
-            layouts[i].setRotationAngle(90 * i);
-            hands[i].setView(this, layouts[i]);
-            hands[i].setTargetArea(new TargetArea(config.TRICK_LOCATION));
-            hands[i].draw();
-        }
+        gameUI.setupCardLayout(hands, playingArea);
     }
 
     private void initScore() {
-        for(int i = 0; i < config.NB_PLAYERS; i++) {
-            String text = "[" + scores[i] + "]";
-            scoreActors[i] = new TextActor(text, Color.WHITE, bgColor, new Font("Arial", Font.BOLD, 36));
-            addActor(scoreActors[i], config.SCORE_LOCATIONS[i]);
-        }
+        gameUI.initScore();
     }
 
     private void initScores() {
@@ -185,14 +166,14 @@ public class HiFive extends CardGame {
                 if(0 == nextPlayer) {
                     hands[0].setTouchEnabled(true);
 
-                    setStatus("Player 0 is playing. Please double click on a card to discard");
+                    gameUI.setStatus("Player 0 is playing. Please double click on a card to discard");
                     selected = null;
                     cardManager.dealACardToHand(hands[0]);
                     while(null == selected)
                         delay(config.delayTime);
                     selected.removeFromHand(true);
                 } else {
-                    setStatusText("Player " + nextPlayer + " thinking...");
+                    gameUI.setStatus("Player " + nextPlayer + " thinking...");
                     selected = cardManager.getRandomCard(hands[nextPlayer]);
                     selected.removeFromHand(true);
                 }
@@ -241,26 +222,18 @@ public class HiFive extends CardGame {
         scoringStrategies.add(new FiveScoring(config.FIVE_GOAL, config.FIVE_POINTS));
         scoringStrategies.add(new SumFiveScoring(config.FIVE_GOAL, config.SUM_FIVE_POINTS));
         scoringStrategies.add(new DifferenceFiveScoring(config.FIVE_GOAL, config.DIFFERENCE_FIVE_POINTS));
-        scoringStrategies.add(new NoFiveScoring());
+        scoringStrategies.add(new NoneFiveScoring());
     }
 
     // ==================== 5. UI and Graphics ====================
-    public void setStatus(String string) {
-        setStatusText(string);
-    }
-
     private void updateScore(int player) {
-        removeActor(scoreActors[player]);
-        int displayScore = Math.max(scores[player], 0);
-        String text = "P" + player + "[" + displayScore + "]";
-        scoreActors[player] = new TextActor(text, Color.WHITE, bgColor, new Font("Arial", Font.BOLD, 36));
-        addActor(scoreActors[player], config.SCORE_LOCATIONS[player]);
+        gameUI.updateScore(player, scores[player]);
     }
 
     // ==================== 8. Main Game Control ====================
     public String runApp() {
         setTitle("HiFive (V" + config.VERSION + ") Constructed for UofM SWEN30006 with JGameGrid (www.aplu.ch)");
-        setStatusText("Initializing...");
+        gameUI.setStatus("Initializing...");
         initScores();
         initScore();
         setupPlayerAutoMovements();
@@ -274,15 +247,8 @@ public class HiFive extends CardGame {
         for(int i = 0; i < config.NB_PLAYERS; i++)
             if(scores[i] == maxScore)
                 winners.add(i);
-        String winText;
-        if(winners.size() == 1) {
-            winText = "Game over. Winner is player: " + winners.get(0);
-        } else {
-            winText = "Game Over. Drawn winners are players: " + winners.stream().map(String::valueOf).collect(Collectors.joining(", "));
-        }
-        addActor(new Actor("sprites/gameover.gif"), config.TEXT_LOCATION);
-        setStatusText(winText);
-        refresh();
+
+        gameUI.showGameOver(winners);
         logManager.addEndOfGameToLog(scores, winners);
 
         return logManager.getLogResult();
