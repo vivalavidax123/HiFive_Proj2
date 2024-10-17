@@ -10,21 +10,21 @@ public class GameManagerFactoryNotUsed {
     private static LogManager logManager;
 
     public static CardManager getCardManager(Random random, GameConfigurations config) {
-        if (cardManager == null) {
+        if(cardManager == null) {
             cardManager = new CardManager(random, config);
         }
         return cardManager;
     }
 
     public static UIManager getUIManager(GameConfigurations config, CardGame game) {
-        if (uiManager == null) {
+        if(uiManager == null) {
             uiManager = new UIManager(config, game);
         }
         return uiManager;
     }
 
     public static LogManager getLogManager() {
-        if (logManager == null) {
+        if(logManager == null) {
             logManager = new LogManager();
         }
         return logManager;

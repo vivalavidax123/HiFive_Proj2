@@ -6,14 +6,12 @@ import java.util.*;
 
 @SuppressWarnings("serial")
 public class HiFive extends CardGame {
-
     // Configuration and game setup
     private final GameConfigurations config;
     private final Random random;
     private final Deck deck;
     private final CardManager cardManager;
     private final UIManager gameUI;
-
     // Player-related fields
     private final int[] scores;
     private final int[] autoIndexHands;
@@ -27,7 +25,8 @@ public class HiFive extends CardGame {
     private Hand pack;
     private Card selected;
     // Scoring
-    private List<ScoringStrategy> scoringStrategies;
+    private final List<ScoringStrategy> scoringStrategies;
+    private final List<GameObserver> observers = new ArrayList<>();
 
     // Constructor
     public HiFive(Properties properties) {
@@ -129,6 +128,7 @@ public class HiFive extends CardGame {
 
         List<Card> cardsPlayed = new ArrayList<>();
         logManager.addRoundInfoToLog(roundNumber);
+        notifyRoundStart(roundNumber);
 
         int nextPlayer = 0;
         while(roundNumber <= 4) {
@@ -182,10 +182,12 @@ public class HiFive extends CardGame {
                 cardsPlayed.add(selected);
                 selected.setVerso(false);
                 delay(config.delayTime);
+                notifyCardPlayed(nextPlayer, selected);
             }
 
             scores[nextPlayer] = scoreForHiFive(nextPlayer);
             updateScore(nextPlayer);
+            notifyScoreUpdate(nextPlayer, scores[nextPlayer]);
             nextPlayer = (nextPlayer + 1) % config.NB_PLAYERS;
 
             if(nextPlayer == 0) {
@@ -194,6 +196,7 @@ public class HiFive extends CardGame {
 
                 if(roundNumber <= 4) {
                     logManager.addRoundInfoToLog(roundNumber);
+                    notifyRoundStart(roundNumber);
                 }
             }
 
@@ -240,7 +243,41 @@ public class HiFive extends CardGame {
 
         gameUI.showGameOver(winners);
         logManager.addEndOfGameToLog(scores, winners);
+        notifyGameOver(scores, winners);
 
         return logManager.getLogResult();
+    }
+
+    // Potential future usage.
+/*    public void addObserver(GameObserver observer) {
+        observers.add(observer);
+    }
+
+    public void removeObserver(GameObserver observer) {
+        observers.remove(observer);
+    }*/
+
+    private void notifyRoundStart(int roundNumber) {
+        for(GameObserver observer : observers) {
+            observer.onRoundStart(roundNumber);
+        }
+    }
+
+    private void notifyCardPlayed(int player, Card card) {
+        for(GameObserver observer : observers) {
+            observer.onCardPlayed(player, card);
+        }
+    }
+
+    private void notifyScoreUpdate(int player, int newScore) {
+        for(GameObserver observer : observers) {
+            observer.onScoreUpdate(player, newScore);
+        }
+    }
+
+    private void notifyGameOver(int[] finalScores, List<Integer> winners) {
+        for(GameObserver observer : observers) {
+            observer.onGameOver(finalScores, winners);
+        }
     }
 }

@@ -24,7 +24,7 @@ public class CardManager {
     }
 
     public Card randomCard(ArrayList<Card> list) {
-        if (list.isEmpty()) {
+        if(list.isEmpty()) {
             return null;
         }
         int x = random.nextInt(list.size());
