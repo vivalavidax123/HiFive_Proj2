@@ -18,7 +18,7 @@ public class HiFive extends CardGame {
     private final Actor[] scoreActors;
     private final int[] scores;
     private final int[] autoIndexHands;
-    private final StringBuilder logResult = new StringBuilder();
+    private final LogManager logManager = new LogManager();
     private final List<List<String>> playerAutoMovements = new ArrayList<>();
     private final CardManager cardManager;
     private final PlayerStrategy[] playerStrategies;
@@ -42,11 +42,11 @@ public class HiFive extends CardGame {
         initializePlayerStrategies();
     }
 
-    // return random Enum value
+/*    // return random Enum value
     public <T extends Enum<?>> T randomEnum(Class<T> clazz) {
         int x = random.nextInt(clazz.getEnumConstants().length);
         return clazz.getEnumConstants()[x];
-    }
+    }*/
 
     // ==================== 2. Game Setup and Initialization ====================
     private void initGame() {
@@ -148,7 +148,7 @@ public class HiFive extends CardGame {
             updateScore(i);
 
         List<Card> cardsPlayed = new ArrayList<>();
-        addRoundInfoToLog(roundNumber);
+        logManager.addRoundInfoToLog(roundNumber);
 
         int nextPlayer = 0;
         while(roundNumber <= 4) {
@@ -198,7 +198,7 @@ public class HiFive extends CardGame {
                 }
             }
 
-            addCardPlayedToLog(nextPlayer, hands[nextPlayer].getCardList());
+            logManager.addCardPlayedToLog(nextPlayer, hands[nextPlayer].getCardList());
             if(selected != null) {
                 cardsPlayed.add(selected);
                 selected.setVerso(false);  // In case it is upside down
@@ -211,10 +211,10 @@ public class HiFive extends CardGame {
 
             if(nextPlayer == 0) {
                 roundNumber++;
-                addEndOfRoundToLog();
+                logManager.addEndOfRoundToLog(scores);
 
                 if(roundNumber <= 4) {
-                    addRoundInfoToLog(roundNumber);
+                    logManager.addRoundInfoToLog(roundNumber);
                 }
             }
 
@@ -257,45 +257,6 @@ public class HiFive extends CardGame {
         addActor(scoreActors[player], config.SCORE_LOCATIONS[player]);
     }
 
-    // ==================== 6. Logging and Result Tracking ====================
-    private void addCardPlayedToLog(int player, List<Card> cards) {
-        if(cards.size() < 2) {
-            return;
-        }
-        logResult.append("P").append(player).append("-");
-
-        for(int i = 0; i < cards.size(); i++) {
-            Rank cardRank = (Rank)cards.get(i).getRank();
-            Suit cardSuit = (Suit)cards.get(i).getSuit();
-            logResult.append(cardRank.getRankCardLog()).append(cardSuit.getSuitShortHand());
-            if(i < cards.size() - 1) {
-                logResult.append("-");
-            }
-        }
-        logResult.append(",");
-    }
-
-    private void addRoundInfoToLog(int roundNumber) {
-        logResult.append("Round").append(roundNumber).append(":");
-    }
-
-    private void addEndOfRoundToLog() {
-        logResult.append("Score:");
-        for(int score : scores) {
-            logResult.append(score).append(",");
-        }
-        logResult.append("\n");
-    }
-
-    private void addEndOfGameToLog(List<Integer> winners) {
-        logResult.append("EndGame:");
-        for(int score : scores) {
-            logResult.append(score).append(",");
-        }
-        logResult.append("\n");
-        logResult.append("Winners:").append(winners.stream().map(String::valueOf).collect(Collectors.joining(", ")));
-    }
-
     // ==================== 8. Main Game Control ====================
     public String runApp() {
         setTitle("HiFive (V" + config.VERSION + ") Constructed for UofM SWEN30006 with JGameGrid (www.aplu.ch)");
@@ -322,9 +283,9 @@ public class HiFive extends CardGame {
         addActor(new Actor("sprites/gameover.gif"), config.TEXT_LOCATION);
         setStatusText(winText);
         refresh();
-        addEndOfGameToLog(winners);
+        logManager.addEndOfGameToLog(scores, winners);
 
-        return logResult.toString();
+        return logManager.getLogResult();
     }
 
     @Override
@@ -335,19 +296,7 @@ public class HiFive extends CardGame {
     private void initializePlayerStrategies() {
         for(int i = 0; i < config.NB_PLAYERS; i++) {
             String playerType = config.properties.getProperty("players." + i, "random").trim().toLowerCase();
-            switch(playerType) {
-                case "human":
-                    playerStrategies[i] = new HumanPlayerStrategy(config);
-                    break;
-                case "basic":
-                    playerStrategies[i] = new BasicPlayerStrategy();
-                    break;
-                case "clever":
-                    playerStrategies[i] = new CleverPlayerStrategy();
-                    break;
-                default:
-                    playerStrategies[i] = new RandomPlayerStrategy();
-            }
+            playerStrategies[i] = PlayerStrategyFactory.createStrategy(playerType, config);
         }
     }
 }
