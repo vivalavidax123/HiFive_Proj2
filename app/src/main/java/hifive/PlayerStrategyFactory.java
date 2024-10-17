@@ -1,7 +1,7 @@
 package hifive;
 
 public class PlayerStrategyFactory {
-    public static PlayerStrategy createStrategy(String playerType, GameConfig config) {
+    public static PlayerStrategy createStrategy(String playerType, GameConfigurations config) {
         switch(playerType.toLowerCase()) {
             case "human":
                 return new HumanPlayerStrategy(config);

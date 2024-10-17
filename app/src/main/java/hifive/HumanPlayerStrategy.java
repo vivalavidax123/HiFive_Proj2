@@ -6,9 +6,9 @@ import ch.aplu.jcardgame.Hand;
 import static ch.aplu.jgamegrid.GameGrid.delay;
 
 public class HumanPlayerStrategy implements PlayerStrategy {
-    private final GameConfig config;
+    private final GameConfigurations config;
 
-    public HumanPlayerStrategy(GameConfig config) {
+    public HumanPlayerStrategy(GameConfigurations config) {
         this.config = config;
     }
 

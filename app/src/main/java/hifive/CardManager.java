@@ -11,12 +11,12 @@ import java.util.Random;
 import static ch.aplu.jgamegrid.GameGrid.delay;
 
 public class CardManager {
-    private final GameConfig gameConfig;
+    private final GameConfigurations gameConfig;
     private final Random random;
     private final Deck deck;
     private final Hand pack;
 
-    public CardManager(Random random, GameConfig config) {
+    public CardManager(Random random, GameConfigurations config) {
         this.gameConfig = config;
         this.random = random;
         this.deck = new Deck(Suit.values(), Rank.values(), "cover");

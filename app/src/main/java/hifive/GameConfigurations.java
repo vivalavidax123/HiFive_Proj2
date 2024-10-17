@@ -4,7 +4,7 @@ import ch.aplu.jgamegrid.Location;
 
 import java.util.Properties;
 
-public class GameConfig {
+public class GameConfigurations {
     // Game constants
     public final int SEED = 30008;
     public final int FIVE_GOAL = 5;
@@ -30,7 +30,7 @@ public class GameConfig {
     public final String[] playerTypes;
     final Properties properties;
 
-    public GameConfig(Properties properties) {
+    public GameConfigurations(Properties properties) {
         this.properties = properties;
         this.isAuto = Boolean.parseBoolean(properties.getProperty("isAuto", "false"));
         this.thinkingTime = Integer.parseInt(properties.getProperty("thinkingTime", "200"));
