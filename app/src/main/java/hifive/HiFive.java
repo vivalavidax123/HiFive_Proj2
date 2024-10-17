@@ -45,7 +45,7 @@ public class HiFive extends CardGame {
         this.autoIndexHands = new int[config.NB_PLAYERS];
 
         // Create game components using factory
-        GameComponentFactory factory = new StandardGameComponentFactory();
+        ComponentFactory factory = new StandardComponentFactory();
         this.scoringStrategies = factory.createScoringStrategies(config);
         this.playerStrategies = factory.createPlayerStrategies(config);
     }
@@ -267,7 +267,7 @@ public class HiFive extends CardGame {
         return logManager.getLogResult();
     }
 
-    // Add an observer to the game for event notifications
+/*    // Add an observer to the game for event notifications
     public void addObserver(GameObserver observer) {
         observers.add(observer);
     }
@@ -275,7 +275,7 @@ public class HiFive extends CardGame {
     // Remove an observer from the game
     public void removeObserver(GameObserver observer) {
         observers.remove(observer);
-    }
+    }*/
 
     // Notify all observers that a new round has started
     private void notifyRoundStart(int roundNumber) {

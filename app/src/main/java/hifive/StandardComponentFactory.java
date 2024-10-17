@@ -2,7 +2,7 @@ package hifive;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StandardGameComponentFactory implements GameComponentFactory {
+public class StandardComponentFactory implements ComponentFactory {
 
     // Creates and returns a list of scoring strategies based on game configuration
     @Override
