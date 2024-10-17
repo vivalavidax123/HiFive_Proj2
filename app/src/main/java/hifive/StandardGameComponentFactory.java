@@ -3,6 +3,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StandardGameComponentFactory implements GameComponentFactory {
+
+    // Creates and returns a list of scoring strategies based on game configuration
     @Override
     public List<ScoringStrategy> createScoringStrategies(GameConfigurations config) {
         List<ScoringStrategy> strategies = new ArrayList<>();
@@ -13,6 +15,7 @@ public class StandardGameComponentFactory implements GameComponentFactory {
         return strategies;
     }
 
+    // Creates and returns an array of player strategies based on game configuration
     @Override
     public PlayerStrategy[] createPlayerStrategies(GameConfigurations config) {
         PlayerStrategy[] strategies = new PlayerStrategy[config.NB_PLAYERS];
@@ -23,6 +26,7 @@ public class StandardGameComponentFactory implements GameComponentFactory {
         return strategies;
     }
 
+    // Creates and returns a specific player strategy based on the player type
     private PlayerStrategy createStrategy(String playerType, GameConfigurations config) {
         return switch(playerType.toLowerCase()) {
             case "human" -> new HumanPlayerStrategy(config);

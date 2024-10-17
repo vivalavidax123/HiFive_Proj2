@@ -20,6 +20,7 @@ public enum Rank {
         this.wildValues = wildValues;
     }
 
+    // Converts a string representation of a card to its corresponding Rank
     public static Rank getRankFromString(String cardName) {
         String rankString = cardName.substring(0, cardName.length() - 1);
         switch(rankString) {
@@ -42,22 +43,27 @@ public enum Rank {
         }
     }
 
+    // Returns the card value of this rank
     public int getRankCardValue() {
         return rankCardValue;
     }
 
+    // Returns the score value of this rank
     public int getScoreCardValue() {
         return scoreValue;
     }
 
+    // Returns a string representation of the rank's card value
     public String getRankCardLog() {
         return String.format("%d", rankCardValue);
     }
 
+    // Returns the list of wild values for this rank, if any
     public List<Integer> getWildValues() {
         return wildValues;
     }
 
+    // Checks if this rank is a wild card
     public boolean isWildCard() {
         return wildValues != null && !wildValues.isEmpty();
     }

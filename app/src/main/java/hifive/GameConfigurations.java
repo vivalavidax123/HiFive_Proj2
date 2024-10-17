@@ -18,11 +18,22 @@ public class GameConfigurations {
     public final int TRICK_WIDTH = 40;
     public final String VERSION = "1.0";
 
-    // Locations
-    public final Location[] HAND_LOCATIONS = {new Location(350, 625), new Location(75, 350), new Location(350, 75), new Location(625, 350)};
-    public final Location[] SCORE_LOCATIONS = {new Location(575, 675), new Location(25, 575), new Location(575, 25), new Location(575, 575)};
+    // Locations for UI elements
+    public final Location[] HAND_LOCATIONS = {
+        new Location(350, 625),
+        new Location(75, 350),
+        new Location(350, 75),
+        new Location(625, 350)
+    };
+    public final Location[] SCORE_LOCATIONS = {
+        new Location(575, 675),
+        new Location(25, 575),
+        new Location(575, 25),
+        new Location(575, 575)
+    };
     public final Location TRICK_LOCATION = new Location(350, 350);
     public final Location TEXT_LOCATION = new Location(350, 450);
+
     // Configurable properties
     public final boolean isAuto;
     public final int thinkingTime;

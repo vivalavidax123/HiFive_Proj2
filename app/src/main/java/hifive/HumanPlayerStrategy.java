@@ -12,6 +12,7 @@ public class HumanPlayerStrategy implements PlayerStrategy {
         this.config = config;
     }
 
+    // Waits for the human player to select a card and returns the selected card
     @Override
     public Card playCard(Hand hand, CardManager cardManager) {
         hand.setTouchEnabled(true);

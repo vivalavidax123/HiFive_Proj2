@@ -7,7 +7,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+// This class implements a more advanced strategy for playing cards in the HiFive game
 public class CleverPlayerStrategy implements PlayerStrategy {
+    // Keep track of cards that have been played
     private final Set<Card> playedCards = new HashSet<>();
 
     @Override
@@ -16,6 +18,7 @@ public class CleverPlayerStrategy implements PlayerStrategy {
         Card bestCard = null;
         int maxScore = Integer.MIN_VALUE;
 
+        // Evaluate each card in the hand to find the best one to play
         for(Card card : cards) {
             int potentialScore = calculatePotentialScore(card, hand);
             if(potentialScore > maxScore) {
@@ -24,23 +27,23 @@ public class CleverPlayerStrategy implements PlayerStrategy {
             }
         }
 
+        // Add the chosen card to the set of played cards
         playedCards.add(bestCard);
         return bestCard;
     }
 
+    // Calculate a potential score for playing a specific card
     private int calculatePotentialScore(Card card, Hand hand) {
-        // Implement logic to calculate potential score based on played cards and current hand
-        // This is a simplified example and should be expanded for better clever play
         Rank rank = (Rank)card.getRank();
         Suit suit = (Suit)card.getSuit();
         int score = rank.getRankCardValue() + suit.getBonusFactor();
 
-        // Consider the probability of getting a good combination
+        // Bonus points if the card can form a "five" combination
         if(canFormFive(card, hand)) {
             score += 50;
         }
 
-        // Adjust score based on played cards
+        // Bonus points for playing a card that hasn't been played before
         if(!playedCards.contains(card)) {
             score += 10;
         }
@@ -48,13 +51,14 @@ public class CleverPlayerStrategy implements PlayerStrategy {
         return score;
     }
 
+    // Check if the card can form a "five" combination with other cards in hand
     private boolean canFormFive(Card card, Hand hand) {
-        // Check if the card can form a five combination with other cards in hand
-        // This is a simplified check and should be expanded for better clever play
         Rank rank = (Rank)card.getRank();
-        return hand.getCardList().stream().anyMatch(c -> ((Rank)c.getRank()).getRankCardValue() + rank.getRankCardValue() == 5);
+        return hand.getCardList().stream()
+            .anyMatch(c -> ((Rank)c.getRank()).getRankCardValue() + rank.getRankCardValue() == 5);
     }
 
+    // Update the set of played cards (can be called externally to update strategy)
     public void updatePlayedCards(Card playedCard) {
         playedCards.add(playedCard);
     }

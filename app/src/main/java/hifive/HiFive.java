@@ -6,44 +6,52 @@ import java.util.*;
 
 @SuppressWarnings("serial")
 public class HiFive extends CardGame {
-    // Configuration and game setup
+    // Configuration and game components
     private final GameConfigurations config;
     private final Random random;
     private final Deck deck;
     private final CardManager cardManager;
     private final UIManager gameUI;
+    private final LogManager logManager = new LogManager();
+
     // Player-related fields
     private final int[] scores;
     private final int[] autoIndexHands;
     private final PlayerStrategy[] playerStrategies;
     private final List<List<String>> playerAutoMovements = new ArrayList<>();
-    // Logging
-    private final LogManager logManager = new LogManager();
+
     // Game state
     private Hand[] hands;
     private Hand playingArea;
     private Hand pack;
     private Card selected;
-    // Scoring
+
+    // Scoring and observers
     private final List<ScoringStrategy> scoringStrategies;
     private final List<GameObserver> observers = new ArrayList<>();
 
     // Constructor
     public HiFive(Properties properties) {
         super(700, 700, 30);
+        // Initialize game components
         this.config = new GameConfigurations(properties);
         this.random = new Random(config.SEED);
         this.deck = new Deck(Suit.values(), Rank.values(), "cover");
-        this.scores = new int[config.NB_PLAYERS];
-        this.autoIndexHands = new int[config.NB_PLAYERS];
         this.cardManager = new CardManager(random, config);
         this.gameUI = new UIManager(config, this);
+
+        // Initialize player-related fields
+        this.scores = new int[config.NB_PLAYERS];
+        this.autoIndexHands = new int[config.NB_PLAYERS];
+
+        // Create game components using factory
         GameComponentFactory factory = new StandardGameComponentFactory();
         this.scoringStrategies = factory.createScoringStrategies(config);
         this.playerStrategies = factory.createPlayerStrategies(config);
     }
 
-    // Game initialization methods
+    // Initialize hands, playing area, and deal cards
+    // Set up card layout and add card listeners for player interactions
     private void initGame() {
         hands = new Hand[config.NB_PLAYERS];
         for(int i = 0; i < config.NB_PLAYERS; i++) {
@@ -67,14 +75,18 @@ public class HiFive extends CardGame {
         gameUI.setupCardLayout(hands, playingArea);
     }
 
+    // Initialize the score display in the game UI
     private void initScore() {
         gameUI.initScore();
     }
 
+    // Reset all player scores to zero
     private void initScores() {
         Arrays.fill(scores, 0);
     }
 
+    // Deal initial cards based on configuration
+    // Randomly deal remaining cards to reach the starting hand size
     private void dealingOut(Hand[] hands) {
         pack = deck.toHand(false);
 
@@ -109,6 +121,8 @@ public class HiFive extends CardGame {
         }
     }
 
+    // Set up automatic movements for players based on configuration
+    // Used for testing and simulating player actions
     private void setupPlayerAutoMovements() {
         String[] playerMovements = new String[4];
         for(int i = 0; i < 4; i++) {
@@ -121,7 +135,8 @@ public class HiFive extends CardGame {
         }
     }
 
-    // Main game loop
+    // Main game loop controlling the flow of the game
+    // Handle player turns, card selection, scoring, and round progression
     private void playGame() {
         int roundNumber = 1;
         for(int i = 0; i < config.NB_PLAYERS; i++)
@@ -208,23 +223,26 @@ public class HiFive extends CardGame {
         }
     }
 
-    // Scoring methods
+    // Calculate and update scores for all players at the end of a round
     private void calculateScoreEndOfRound() {
         for(int i = 0; i < hands.length; i++) {
             scores[i] = scoreForHiFive(i);
         }
     }
 
+    // Calculate the score for a specific player based on their hand
     private int scoreForHiFive(int playerIndex) {
         List<Card> privateCards = hands[playerIndex].getCardList();
         return scoringStrategies.stream().mapToInt(strategy -> strategy.calculateScore(privateCards)).max().orElse(0);
     }
 
+    // Update the score display for a specific player
     private void updateScore(int player) {
         gameUI.updateScore(player, scores[player]);
     }
 
-    // Main application method
+    // Main method to run the HiFive game application
+    // Control overall flow: initialization, gameplay, and end game
     public String runApp() {
         setTitle("HiFive (V" + config.VERSION + ") Constructed for UofM SWEN30006 with JGameGrid (www.aplu.ch)");
         gameUI.setStatus("Initializing...");
@@ -249,33 +267,38 @@ public class HiFive extends CardGame {
         return logManager.getLogResult();
     }
 
-    // Potential future usage.
-/*    public void addObserver(GameObserver observer) {
+    // Add an observer to the game for event notifications
+    public void addObserver(GameObserver observer) {
         observers.add(observer);
     }
 
+    // Remove an observer from the game
     public void removeObserver(GameObserver observer) {
         observers.remove(observer);
-    }*/
+    }
 
+    // Notify all observers that a new round has started
     private void notifyRoundStart(int roundNumber) {
         for(GameObserver observer : observers) {
             observer.onRoundStart(roundNumber);
         }
     }
 
+    // Notify all observers that a card has been played
     private void notifyCardPlayed(int player, Card card) {
         for(GameObserver observer : observers) {
             observer.onCardPlayed(player, card);
         }
     }
 
+    // Notify all observers that a player's score has been updated
     private void notifyScoreUpdate(int player, int newScore) {
         for(GameObserver observer : observers) {
             observer.onScoreUpdate(player, newScore);
         }
     }
 
+    // Notify all observers that the game has ended
     private void notifyGameOver(int[] finalScores, List<Integer> winners) {
         for(GameObserver observer : observers) {
             observer.onGameOver(finalScores, winners);

@@ -7,6 +7,8 @@ import java.util.Comparator;
 import java.util.List;
 
 public class BasicPlayerStrategy implements PlayerStrategy {
+
+    // Selects a card to play based on a basic strategy
     @Override
     public Card playCard(Hand hand, CardManager cardManager) {
         List<Card> cards = hand.getCardList();
@@ -19,6 +21,7 @@ public class BasicPlayerStrategy implements PlayerStrategy {
         }
     }
 
+    // Checks if the given rank is a picture card (Ace, Jack, Queen, or King)
     private boolean isPictureCard(Rank rank) {
         return rank == Rank.ACE || rank == Rank.JACK || rank == Rank.QUEEN || rank == Rank.KING;
     }
