@@ -6,7 +6,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class LogManager {
+    private static final LogManager instance = new LogManager();
     private final StringBuilder logResult = new StringBuilder();
+
+    public static LogManager getInstance() {
+        return instance;
+    }
 
     public void addCardPlayedToLog(int player, List<Card> cards) {
         if(cards.size() < 2) {
@@ -48,5 +53,9 @@ public class LogManager {
 
     public String getLogResult() {
         return logResult.toString();
+    }
+
+    public void resetLog() {
+        logResult.setLength(0);
     }
 }

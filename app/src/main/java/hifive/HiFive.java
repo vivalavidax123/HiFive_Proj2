@@ -38,8 +38,9 @@ public class HiFive extends CardGame {
         this.autoIndexHands = new int[config.NB_PLAYERS];
         this.cardManager = new CardManager(random, config);
         this.gameUI = new UIManager(config, this);
-        this.scoringStrategies = ScoringStrategyFactory.createScoringStrategies(config);
-        this.playerStrategies = PlayerStrategyFactory.createPlayerStrategies(config);
+        GameComponentFactory factory = new StandardGameComponentFactory();
+        this.scoringStrategies = factory.createScoringStrategies(config);
+        this.playerStrategies = factory.createPlayerStrategies(config);
     }
 
     // Game initialization methods
