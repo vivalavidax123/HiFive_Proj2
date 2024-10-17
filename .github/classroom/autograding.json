@@ -1,0 +1,14 @@
+{
+  "tests": [
+    {
+      "name": "Project 2 Test",
+      "setup": "",
+      "run": "xvfb-run gradle test",
+      "input": "",
+      "output": "",
+      "comparison": "exact",
+      "timeout": 10,
+      "points": null
+    }
+  ]
+}
