@@ -1,4 +1,4 @@
-package hifive.GameEngine.ScoringComponent;
+package hifive.GameEngine;
 
 import ch.aplu.jcardgame.Card;
 

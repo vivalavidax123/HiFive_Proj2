@@ -2,7 +2,6 @@ package hifive.GameEngine;
 
 import hifive.CardComponent.GameConfigurations;
 import hifive.PlayerStrategy;
-import hifive.GameEngine.ScoringComponent.ScoringStrategy;
 
 import java.util.List;
 

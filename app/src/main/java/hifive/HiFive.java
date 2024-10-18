@@ -6,11 +6,8 @@ import hifive.CardComponent.GameConfigurations;
 import hifive.CardComponent.ICardManager;
 import hifive.Enumeration.Rank;
 import hifive.Enumeration.Suit;
-import hifive.GameEngine.GameComponentFactory;
-import hifive.GameEngine.StandardGameComponentFactory;
 import hifive.LogComponent.ILogManager;
 import hifive.LogComponent.LogManager;
-import hifive.GameEngine.ScoringComponent.ScoringStrategy;
 import hifive.UIComponent.IUIManager;
 import hifive.UIComponent.UIManager;
 
@@ -29,7 +26,6 @@ public class HiFive extends CardGame {
     // Player-related fields
     private final int[] scores;
     private final int[] autoIndexHands;
-    private final PlayerStrategy[] playerStrategies;
     private final List<List<String>> playerAutoMovements = new ArrayList<>();
 
     // Game state
@@ -39,7 +35,6 @@ public class HiFive extends CardGame {
     private Card selected;
 
     // Scoring and observers
-    private final List<ScoringStrategy> scoringStrategies;
     private final List<GameObserver> observers = new ArrayList<>();
 
     // Constructor
@@ -56,10 +51,6 @@ public class HiFive extends CardGame {
         this.scores = new int[config.NB_PLAYERS];
         this.autoIndexHands = new int[config.NB_PLAYERS];
 
-        // Create game components using factory
-        GameComponentFactory factory = new StandardGameComponentFactory();
-        this.scoringStrategies = factory.createScoringStrategies(config);
-        this.playerStrategies = factory.createPlayerStrategies(config);
     }
 
     // Initialize hands, playing area, and deal cards
@@ -245,7 +236,7 @@ public class HiFive extends CardGame {
     // Calculate the score for a specific player based on their hand
     private int scoreForHiFive(int playerIndex) {
         List<Card> privateCards = hands[playerIndex].getCardList();
-        return scoringStrategies.stream().mapToInt(strategy -> strategy.calculateScore(privateCards)).max().orElse(0);
+        return config.scoringStrategies.stream().mapToInt(strategy -> strategy.calculateScore(privateCards)).max().orElse(0);
     }
 
     // Update the score display for a specific player

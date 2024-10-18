@@ -1,4 +1,4 @@
-package hifive.GameEngine.ScoringComponent;
+package hifive.GameEngine;
 
 import ch.aplu.jcardgame.Card;
 import hifive.Enumeration.Rank;
@@ -6,13 +6,13 @@ import hifive.Enumeration.Suit;
 
 import java.util.List;
 
-public class SumFiveScoring implements ScoringStrategy {
+public class DifferenceFiveScoring implements ScoringStrategy {
     private final int fiveGoal;
-    private final int sumFivePoints;
+    private final int differenceFivePoints;
 
-    public SumFiveScoring(int fiveGoal, int sumFivePoints) {
+    public DifferenceFiveScoring(int fiveGoal, int differenceFivePoints) {
         this.fiveGoal = fiveGoal;
-        this.sumFivePoints = sumFivePoints;
+        this.differenceFivePoints = differenceFivePoints;
     }
 
     @Override
@@ -24,21 +24,21 @@ public class SumFiveScoring implements ScoringStrategy {
         Rank rank1 = (Rank)card1.getRank();
         Rank rank2 = (Rank)card2.getRank();
 
-        if(checkSum(rank1, rank2) || checkSum(rank2, rank1)) {
+        if(checkDifference(rank1, rank2) || checkDifference(rank2, rank1)) {
             Suit suit1 = (Suit)card1.getSuit();
             Suit suit2 = (Suit)card2.getSuit();
-            return sumFivePoints + suit1.getBonusFactor() + suit2.getBonusFactor();
+            return differenceFivePoints + suit1.getBonusFactor() + suit2.getBonusFactor();
         }
         return 0;
     }
 
-    private boolean checkSum(Rank rank1, Rank rank2) {
-        if(rank1.getRankCardValue() + rank2.getRankCardValue() == fiveGoal) {
+    private boolean checkDifference(Rank rank1, Rank rank2) {
+        if(Math.abs(rank1.getRankCardValue() - rank2.getRankCardValue()) == fiveGoal) {
             return true;
         }
         if(rank1.isWildCard()) {
             for(int wildValue : rank1.getWildValues()) {
-                if(wildValue + rank2.getRankCardValue() == fiveGoal) {
+                if(Math.abs(wildValue - rank2.getRankCardValue()) == fiveGoal) {
                     return true;
                 }
             }
