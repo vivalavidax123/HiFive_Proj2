@@ -5,9 +5,10 @@ import hifive.Rank;
 import hifive.Suit;
 
 import java.util.*;
+
 import static ch.aplu.jgamegrid.GameGrid.delay;
 
-public class CardManager {
+public class CardManager implements ICardManager {
     private final GameConfigurations gameConfig;
     private final Random random;
     private final Deck deck;
@@ -20,7 +21,7 @@ public class CardManager {
         this.pack = deck.toHand(false);
     }
 
-    // Select a random card from the given list
+    @Override
     public Card randomCard(ArrayList<Card> list) {
         if (list.isEmpty()) {
             return null;
@@ -29,19 +30,15 @@ public class CardManager {
         return list.get(x);
     }
 
-    // Get a specific card from the list based on its name
-    public Card getCardFromList(List<Card> cards, String cardName) {
-        Rank cardRank = Rank.getRankFromString(cardName);
-        Suit cardSuit = Suit.getSuitFromString(cardName);
-        for (Card card : cards) {
-            if (card.getSuit() == cardSuit && card.getRank() == cardRank) {
-                return card;
-            }
-        }
-        return null;
+    @Override
+    public Card getRandomCard(Hand hand) {
+        dealACardToHand(hand);
+        delay(gameConfig.thinkingTime);
+        int x = random.nextInt(hand.getCardList().size());
+        return hand.getCardList().get(x);
     }
 
-    // Deal a card to the given hand
+    @Override
     public void dealACardToHand(Hand hand) {
         if (pack.isEmpty())
             return;
@@ -50,20 +47,24 @@ public class CardManager {
         hand.insert(dealt, true);
     }
 
-    // Get a random card from the given hand
-    public Card getRandomCard(Hand hand) {
-        dealACardToHand(hand);
-        delay(gameConfig.thinkingTime);
-        int x = random.nextInt(hand.getCardList().size());
-        return hand.getCardList().get(x);
-    }
-
-    // Getter for pack
+    @Override
     public Hand getPack() {
         return pack;
     }
 
-    // Apply automatic movement for a player
+    @Override
+    public Card getCardFromList(ArrayList<Card> cardList, String cardName) {
+        Rank cardRank = Rank.getRankFromString(cardName);
+        Suit cardSuit = Suit.getSuitFromString(cardName);
+        for (Card card : cardList) {
+            if (card.getSuit() == cardSuit && card.getRank() == cardRank) {
+                return card;
+            }
+        }
+        return null;
+    }
+
+    @Override
     public Card applyAutoMovement(Hand hand, String nextMovement) {
         if (pack.isEmpty())
             return null;

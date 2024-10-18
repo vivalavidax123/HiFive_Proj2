@@ -3,6 +3,7 @@ package hifive;
 import ch.aplu.jcardgame.*;
 import hifive.CardComponent.CardManager;
 import hifive.CardComponent.GameConfigurations;
+import hifive.CardComponent.ICardManager;
 import hifive.LogComponent.ILogManager;
 import hifive.LogComponent.LogManager;
 import hifive.UIComponent.UIManager;
@@ -15,7 +16,7 @@ public class HiFive extends CardGame {
     private final GameConfigurations config;
     private final Random random;
     private final Deck deck;
-    private final CardManager cardManager;
+    private final ICardManager cardManager;
     private final UIManager gameUI;
     private final ILogManager logManager = LogManager.getInstance();
 

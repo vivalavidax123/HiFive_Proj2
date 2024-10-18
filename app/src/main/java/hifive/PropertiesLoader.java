@@ -1,4 +1,4 @@
-package hifive.CardComponent;
+package hifive;
 
 import java.io.IOException;
 import java.io.InputStream;
