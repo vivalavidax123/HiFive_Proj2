@@ -1,15 +1,5 @@
 name: workflow_proj2
 
-on:
-  push:
-    branches:
-      - PackageDelegation
-      - main
-  pull_request:
-    branches:
-      - PackageDelegation
-      - main
-
 
 permissions:
   checks: write

@@ -43,8 +43,6 @@ public class HiFive extends CardGame implements IGameUtilities {
         this.deck = new Deck(Suit.values(), Rank.values(), "cover");
         this.cardManager = new CardManager(new Random(GameConfigurations.SEED), config);
         this.gameUI = new UIManager(config, this);
-
-        // Initialize player-related fields
     }
 
     // Initialize hands, playing area, and game engine
