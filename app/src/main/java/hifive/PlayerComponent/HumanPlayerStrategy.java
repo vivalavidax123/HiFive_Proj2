@@ -1,4 +1,4 @@
-package hifive;
+package hifive.PlayerComponent;
 
 import ch.aplu.jcardgame.Card;
 import ch.aplu.jcardgame.Hand;

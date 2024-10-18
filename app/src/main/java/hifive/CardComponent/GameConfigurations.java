@@ -1,12 +1,7 @@
 package hifive.CardComponent;
 
 import ch.aplu.jgamegrid.Location;
-import hifive.GameEngine.GameComponentFactory;
-import hifive.GameEngine.ScoringStrategy;
-import hifive.GameEngine.StandardGameComponentFactory;
-import hifive.PlayerStrategy;
 
-import java.util.List;
 import java.util.Properties;
 
 public class GameConfigurations {
@@ -22,20 +17,19 @@ public class GameConfigurations {
     public final int HAND_WIDTH = 400;
     public final int TRICK_WIDTH = 40;
     public final String VERSION = "1.0";
-    public final List<ScoringStrategy> scoringStrategies;
 
     // Locations for UI elements
     public final Location[] HAND_LOCATIONS = {
-        new Location(350, 625),
-        new Location(75, 350),
-        new Location(350, 75),
-        new Location(625, 350)
+            new Location(350, 625),
+            new Location(75, 350),
+            new Location(350, 75),
+            new Location(625, 350)
     };
     public final Location[] SCORE_LOCATIONS = {
-        new Location(575, 675),
-        new Location(25, 575),
-        new Location(575, 25),
-        new Location(575, 575)
+            new Location(575, 675),
+            new Location(25, 575),
+            new Location(575, 25),
+            new Location(575, 575)
     };
     public final Location TRICK_LOCATION = new Location(350, 350);
     public final Location TEXT_LOCATION = new Location(350, 450);
@@ -46,7 +40,6 @@ public class GameConfigurations {
     public final int delayTime;
     public final String[] playerTypes;
     public final Properties properties;
-    private final PlayerStrategy[] playerStrategies;
 
     public GameConfigurations(Properties properties) {
         this.properties = properties;
@@ -54,9 +47,5 @@ public class GameConfigurations {
         this.thinkingTime = Integer.parseInt(properties.getProperty("thinkingTime", "200"));
         this.delayTime = Integer.parseInt(properties.getProperty("delayTime", "60"));
         this.playerTypes = properties.getProperty("playerTypes", "human,random,basic,clever").split(",");
-        // Create game components using factory
-        GameComponentFactory factory = new StandardGameComponentFactory();
-        this.scoringStrategies = factory.createScoringStrategies(this);
-        this.playerStrategies = factory.createPlayerStrategies(this);
     }
 }

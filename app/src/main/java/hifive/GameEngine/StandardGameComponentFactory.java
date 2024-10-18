@@ -1,6 +1,6 @@
 package hifive.GameEngine;
-import hifive.*;
 import hifive.CardComponent.GameConfigurations;
+import hifive.PlayerComponent.*;
 
 import java.util.ArrayList;
 import java.util.List;
