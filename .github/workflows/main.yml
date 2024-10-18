@@ -3,11 +3,10 @@ name: workflow_proj2
 on:
   push:
     branches:
-      - main  # Replace with the name of the branch where you want to trigger the workflow
-      - develop  # You can add multiple branches like this
+      - feature-branch  # Change this to the specific branch name
   pull_request:
     branches:
-      - main  # Workflow runs on pull requests targeting the 'main' branch
+      - feature-branch
 
 permissions:
   checks: write
