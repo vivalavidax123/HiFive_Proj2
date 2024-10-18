@@ -3,10 +3,12 @@ name: workflow_proj2
 on:
   push:
     branches:
-      - feature-branch  # Change this to the specific branch name
+      - PackageDelegation
+  # Change this to the specific branch name
   pull_request:
     branches:
-      - feature-branch
+      - PackageDelegation
+
 
 permissions:
   checks: write
