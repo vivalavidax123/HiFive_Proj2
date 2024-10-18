@@ -1,4 +1,4 @@
-package hifive;
+package hifive.Enumeration;
 
 public enum Suit {
     SPADES("S", 20), HEARTS("H", 15), DIAMONDS("D", 10), CLUBS("C", 5);

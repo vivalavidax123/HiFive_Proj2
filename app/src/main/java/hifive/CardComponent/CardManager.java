@@ -1,8 +1,8 @@
 package hifive.CardComponent;
 
 import ch.aplu.jcardgame.*;
-import hifive.Rank;
-import hifive.Suit;
+import hifive.Enumeration.Rank;
+import hifive.Enumeration.Suit;
 
 import java.util.*;
 

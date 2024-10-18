@@ -3,6 +3,8 @@ package hifive;
 import ch.aplu.jcardgame.Card;
 import ch.aplu.jcardgame.Hand;
 import hifive.CardComponent.CardManager;
+import hifive.Enumeration.Rank;
+import hifive.Enumeration.Suit;
 
 import java.util.HashSet;
 import java.util.List;

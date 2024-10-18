@@ -1,6 +1,8 @@
-package hifive;
+package hifive.GameEngine.ScoringComponent;
 
 import ch.aplu.jcardgame.Card;
+import hifive.Enumeration.Rank;
+import hifive.Enumeration.Suit;
 
 import java.util.List;
 

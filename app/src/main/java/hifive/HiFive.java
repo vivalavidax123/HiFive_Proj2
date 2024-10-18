@@ -4,8 +4,14 @@ import ch.aplu.jcardgame.*;
 import hifive.CardComponent.CardManager;
 import hifive.CardComponent.GameConfigurations;
 import hifive.CardComponent.ICardManager;
+import hifive.Enumeration.Rank;
+import hifive.Enumeration.Suit;
+import hifive.GameEngine.GameComponentFactory;
+import hifive.GameEngine.StandardGameComponentFactory;
 import hifive.LogComponent.ILogManager;
 import hifive.LogComponent.LogManager;
+import hifive.GameEngine.ScoringComponent.ScoringStrategy;
+import hifive.UIComponent.IUIManager;
 import hifive.UIComponent.UIManager;
 
 import java.util.*;
@@ -17,7 +23,7 @@ public class HiFive extends CardGame {
     private final Random random;
     private final Deck deck;
     private final ICardManager cardManager;
-    private final UIManager gameUI;
+    private final IUIManager gameUI;
     private final ILogManager logManager = LogManager.getInstance();
 
     // Player-related fields
