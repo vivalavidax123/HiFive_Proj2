@@ -1,6 +1,13 @@
 name: workflow_proj2
 
-on: [workflow_dispatch]
+on:
+  push:
+    branches:
+      - main  # Replace with the name of the branch where you want to trigger the workflow
+      - develop  # You can add multiple branches like this
+  pull_request:
+    branches:
+      - main  # Workflow runs on pull requests targeting the 'main' branch
 
 permissions:
   checks: write
@@ -10,7 +17,7 @@ permissions:
 jobs:
   build:
     name: Autograding
-    runs-on: ubuntu-latest  # Change this line to use a GitHub-hosted runner
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: education/autograding@v1
