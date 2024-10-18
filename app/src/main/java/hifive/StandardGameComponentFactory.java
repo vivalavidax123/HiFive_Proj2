@@ -1,4 +1,6 @@
 package hifive;
+import hifive.CardComponent.GameConfigurations;
+
 import java.util.ArrayList;
 import java.util.List;
 

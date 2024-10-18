@@ -1,6 +1,11 @@
 package hifive;
 
 import ch.aplu.jcardgame.*;
+import hifive.CardComponent.CardManager;
+import hifive.CardComponent.GameConfigurations;
+import hifive.LogComponent.ILogManager;
+import hifive.LogComponent.LogManager;
+import hifive.UIComponent.UIManager;
 
 import java.util.*;
 
@@ -12,7 +17,7 @@ public class HiFive extends CardGame {
     private final Deck deck;
     private final CardManager cardManager;
     private final UIManager gameUI;
-    private final LogManager logManager = new LogManager();
+    private final ILogManager logManager = LogManager.getInstance();
 
     // Player-related fields
     private final int[] scores;
@@ -244,6 +249,7 @@ public class HiFive extends CardGame {
     // Main method to run the HiFive game application
     // Control overall flow: initialization, gameplay, and end game
     public String runApp() {
+        logManager.resetLog();  // Reset the log at the start of the game
         setTitle("HiFive (V" + config.VERSION + ") Constructed for UofM SWEN30006 with JGameGrid (www.aplu.ch)");
         gameUI.setStatus("Initializing...");
         initScores();
@@ -266,6 +272,7 @@ public class HiFive extends CardGame {
 
         return logManager.getLogResult();
     }
+
 
     // Add an observer to the game for event notifications
     public void addObserver(GameObserver observer) {

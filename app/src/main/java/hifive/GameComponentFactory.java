@@ -1,5 +1,7 @@
 package hifive;
 
+import hifive.CardComponent.GameConfigurations;
+
 import java.util.List;
 
 public interface GameComponentFactory {

@@ -1,7 +1,7 @@
 package scores;
 
 import hifive.HiFive;
-import hifive.PropertiesLoader;
+import hifive.CardComponent.PropertiesLoader;
 import org.junit.Test;
 
 import java.util.Properties;

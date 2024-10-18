@@ -1,6 +1,9 @@
-package hifive;
+package hifive.CardComponent;
 
 import ch.aplu.jcardgame.*;
+import hifive.Rank;
+import hifive.Suit;
+
 import java.util.*;
 import static ch.aplu.jgamegrid.GameGrid.delay;
 
@@ -27,7 +30,7 @@ public class CardManager {
     }
 
     // Get a specific card from the list based on its name
-    Card getCardFromList(List<Card> cards, String cardName) {
+    public Card getCardFromList(List<Card> cards, String cardName) {
         Rank cardRank = Rank.getRankFromString(cardName);
         Suit cardSuit = Suit.getSuitFromString(cardName);
         for (Card card : cards) {
@@ -39,7 +42,7 @@ public class CardManager {
     }
 
     // Deal a card to the given hand
-    void dealACardToHand(Hand hand) {
+    public void dealACardToHand(Hand hand) {
         if (pack.isEmpty())
             return;
         Card dealt = randomCard(pack.getCardList());
@@ -61,7 +64,7 @@ public class CardManager {
     }
 
     // Apply automatic movement for a player
-    Card applyAutoMovement(Hand hand, String nextMovement) {
+    public Card applyAutoMovement(Hand hand, String nextMovement) {
         if (pack.isEmpty())
             return null;
         String[] cardStrings = nextMovement.split("-");

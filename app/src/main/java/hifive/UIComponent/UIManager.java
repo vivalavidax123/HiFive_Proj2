@@ -1,12 +1,14 @@
-package hifive;
+package hifive.UIComponent;
 
 import ch.aplu.jcardgame.*;
 import ch.aplu.jgamegrid.*;
+import hifive.CardComponent.GameConfigurations;
+
 import java.awt.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class UIManager {
+public class UIManager implements IUIManager {
     private final GameConfigurations config;
     private final CardGame game;
     private final Actor[] scoreActors;
@@ -17,7 +19,7 @@ public class UIManager {
         this.scoreActors = new Actor[config.NB_PLAYERS];
     }
 
-    // Initialize the score display for all players
+    @Override
     public void initScore() {
         for (int i = 0; i < config.NB_PLAYERS; i++) {
             String text = "[0]";
@@ -26,7 +28,7 @@ public class UIManager {
         }
     }
 
-    // Update the score display for a specific player
+    @Override
     public void updateScore(int player, int score) {
         game.removeActor(scoreActors[player]);
         int displayScore = Math.max(score, 0);
@@ -35,12 +37,12 @@ public class UIManager {
         game.addActor(scoreActors[player], config.SCORE_LOCATIONS[player]);
     }
 
-    // Set the status text in the game UI
-    public void setStatus(String string) {
-        game.setStatusText(string);
+    @Override
+    public void setStatus(String status) {
+        game.setStatusText(status);
     }
 
-    // Set up the card layout for all players and the playing area
+    @Override
     public void setupCardLayout(Hand[] hands, Hand playingArea) {
         playingArea.setView(game, new RowLayout(config.TRICK_LOCATION, (playingArea.getNumberOfCards() + 2) * config.TRICK_WIDTH));
         playingArea.draw();
@@ -55,7 +57,7 @@ public class UIManager {
         }
     }
 
-    // Display the game over screen with winners
+    @Override
     public void showGameOver(List<Integer> winners) {
         String winText;
         if (winners.size() == 1) {

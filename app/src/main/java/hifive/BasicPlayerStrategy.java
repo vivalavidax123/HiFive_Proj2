@@ -2,6 +2,7 @@ package hifive;
 
 import ch.aplu.jcardgame.Card;
 import ch.aplu.jcardgame.Hand;
+import hifive.CardComponent.CardManager;
 
 import java.util.Comparator;
 import java.util.List;

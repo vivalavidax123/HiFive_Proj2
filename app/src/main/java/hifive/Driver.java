@@ -1,5 +1,7 @@
 package hifive;
 
+import hifive.CardComponent.PropertiesLoader;
+
 import java.util.Properties;
 
 public class Driver {

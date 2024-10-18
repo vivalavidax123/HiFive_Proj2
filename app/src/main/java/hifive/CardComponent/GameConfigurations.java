@@ -1,4 +1,4 @@
-package hifive;
+package hifive.CardComponent;
 
 import ch.aplu.jgamegrid.Location;
 
@@ -39,7 +39,7 @@ public class GameConfigurations {
     public final int thinkingTime;
     public final int delayTime;
     public final String[] playerTypes;
-    final Properties properties;
+    public final Properties properties;
 
     public GameConfigurations(Properties properties) {
         this.properties = properties;
