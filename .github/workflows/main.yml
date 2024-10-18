@@ -4,10 +4,11 @@ on:
   push:
     branches:
       - PackageDelegation
-  # Change this to the specific branch name
+      - main
   pull_request:
     branches:
       - PackageDelegation
+      - main
 
 
 permissions:
