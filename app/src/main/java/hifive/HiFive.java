@@ -1,23 +1,19 @@
 package hifive;
 
 import ch.aplu.jcardgame.*;
-import hifive.CardComponent.CardManager;
-import hifive.CardComponent.ICardManager;
-import hifive.Enumeration.Rank;
-import hifive.Enumeration.Suit;
-import hifive.GameEngine.GameEngine;
-import hifive.GameEngine.IGameUtilities;
-import hifive.LogComponent.ILogManager;
-import hifive.LogComponent.LogManager;
-import hifive.UIComponent.IUIManager;
-import hifive.UIComponent.UIManager;
+
+import ch.aplu.jgamegrid.GameGrid;
+import hifive.CardComponent.*;
+import hifive.Enumeration.*;
+import hifive.GameEngine.*;
+import hifive.LogComponent.*;
+import hifive.UIComponent.*;
 
 import java.util.*;
 
 public class HiFive extends CardGame implements IGameUtilities {
     // Configuration and game components
     private final GameConfigurations config;
-    private final Random random;
     private final Deck deck;
     private final ICardManager cardManager;
     private final IUIManager gameUI;
@@ -27,11 +23,9 @@ public class HiFive extends CardGame implements IGameUtilities {
     private final GameSetup gameSetup;
 
     // Player-related fields
-    private final int[] scores;
 
     // Game state
     private Hand[] hands;
-    private Hand playingArea;
     private Card selected;
 
     // Scoring and observers
@@ -46,22 +40,19 @@ public class HiFive extends CardGame implements IGameUtilities {
         // Initialize game components
         this.config = new GameConfigurations(properties);
         this.gameSetup = new GameSetup(config);
-        this.random = new Random(config.SEED);
         this.deck = new Deck(Suit.values(), Rank.values(), "cover");
-        this.cardManager = new CardManager(random, config);
+        this.cardManager = new CardManager(new Random(GameConfigurations.SEED), config);
         this.gameUI = new UIManager(config, this);
 
         // Initialize player-related fields
-        this.scores = new int[config.NB_PLAYERS];
     }
 
     // Initialize hands, playing area, and game engine
     private void initGame() {
-        hands = new Hand[config.NB_PLAYERS];
-        for (int i = 0; i < config.NB_PLAYERS; i++) {
+        hands = new Hand[GameConfigurations.NB_PLAYERS];
+        for (int i = 0; i < GameConfigurations.NB_PLAYERS; i++) {
             hands[i] = new Hand(deck);
         }
-        playingArea = new Hand(deck);
 
         // Initialize game engine
         gameEngine = new GameEngine(
@@ -78,7 +69,7 @@ public class HiFive extends CardGame implements IGameUtilities {
         // Deal initial cards
         gameEngine.dealingOut();
 
-        for (int i = 0; i < config.NB_PLAYERS; i++) {
+        for (int i = 0; i < GameConfigurations.NB_PLAYERS; i++) {
             hands[i].sort(Hand.SortType.SUITPRIORITY, false);
         }
 
@@ -91,7 +82,7 @@ public class HiFive extends CardGame implements IGameUtilities {
         };
         hands[0].addCardListener(cardListener);
 
-        gameUI.setupCardLayout(hands, playingArea);
+        gameUI.setupCardLayout(hands, new Hand(deck));
 
         // Initialize scores after gameEngine is initialized
         gameEngine.initScores();
@@ -115,13 +106,13 @@ public class HiFive extends CardGame implements IGameUtilities {
 
     @Override
     public void delay(int time) {
-        super.delay(time);
+        GameGrid.delay(time);
     }
 
     // Main method to run the HiFive game application
     public String runApp() {
         logManager.resetLog(); // Reset the log at the start of the game
-        setTitle("HiFive (V" + config.VERSION + ") Constructed for UofM SWEN30006 with JGameGrid (www.aplu.ch)");
+        setTitle("HiFive (V" + GameConfigurations.VERSION + ") Constructed for UofM SWEN30006 with JGameGrid (www.aplu.ch)");
         gameUI.setStatus("Initializing...");
 
         initGame(); // Initialize the game and gameEngine first
@@ -131,11 +122,11 @@ public class HiFive extends CardGame implements IGameUtilities {
 
         int[] finalScores = gameEngine.getFinalScores();
 
-        for (int i = 0; i < config.NB_PLAYERS; i++)
+        for (int i = 0; i < GameConfigurations.NB_PLAYERS; i++)
             gameUI.updateScore(i, finalScores[i]);
         int maxScore = Arrays.stream(finalScores).max().orElse(0);
         List<Integer> winners = new ArrayList<>();
-        for (int i = 0; i < config.NB_PLAYERS; i++)
+        for (int i = 0; i < GameConfigurations.NB_PLAYERS; i++)
             if (finalScores[i] == maxScore)
                 winners.add(i);
 

@@ -13,7 +13,6 @@ public class GameConfigurations {
     public static final int DIFFERENCE_FIVE_POINTS = 20;
     public static final int NB_PLAYERS = 4;
     public static final int NB_START_CARDS = 2;
-    public static final int NB_FACE_UP_CARDS = 2;
     public static final int HAND_WIDTH = 400;
     public static final int TRICK_WIDTH = 40;
     public static final String VERSION = "1.0";

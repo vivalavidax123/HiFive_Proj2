@@ -11,9 +11,9 @@ public class StandardGameComponentFactory implements GameComponentFactory {
     @Override
     public List<ScoringStrategy> createScoringStrategies(GameConfigurations config) {
         List<ScoringStrategy> strategies = new ArrayList<>();
-        strategies.add(new FiveScoring(config.FIVE_GOAL, config.FIVE_POINTS));
-        strategies.add(new SumFiveScoring(config.FIVE_GOAL, config.SUM_FIVE_POINTS));
-        strategies.add(new DifferenceFiveScoring(config.FIVE_GOAL, config.DIFFERENCE_FIVE_POINTS));
+        strategies.add(new FiveScoring(GameConfigurations.FIVE_GOAL, GameConfigurations.FIVE_POINTS));
+        strategies.add(new SumFiveScoring(GameConfigurations.FIVE_GOAL, GameConfigurations.SUM_FIVE_POINTS));
+        strategies.add(new DifferenceFiveScoring(GameConfigurations.FIVE_GOAL, GameConfigurations.DIFFERENCE_FIVE_POINTS));
         strategies.add(new NoneFiveScoring());
         return strategies;
     }
@@ -21,8 +21,8 @@ public class StandardGameComponentFactory implements GameComponentFactory {
     // Creates and returns an array of player strategies based on game configuration
     @Override
     public PlayerStrategy[] createPlayerStrategies(GameConfigurations config) {
-        PlayerStrategy[] strategies = new PlayerStrategy[config.NB_PLAYERS];
-        for(int i = 0; i < config.NB_PLAYERS; i++) {
+        PlayerStrategy[] strategies = new PlayerStrategy[GameConfigurations.NB_PLAYERS];
+        for(int i = 0; i < GameConfigurations.NB_PLAYERS; i++) {
             String playerType = config.properties.getProperty("players." + i, "random").trim().toLowerCase();
             strategies[i] = createStrategy(playerType, config);
         }
@@ -32,7 +32,7 @@ public class StandardGameComponentFactory implements GameComponentFactory {
     // Creates and returns a specific player strategy based on the player type
     private PlayerStrategy createStrategy(String playerType, GameConfigurations config) {
         return switch(playerType.toLowerCase()) {
-            case "human" -> new HumanPlayerStrategy(config);
+            case "human" -> new HumanPlayerStrategy(config.delayTime);
             case "basic" -> new BasicPlayerStrategy();
             case "clever" -> new CleverPlayerStrategy();
             default -> new RandomPlayerStrategy();

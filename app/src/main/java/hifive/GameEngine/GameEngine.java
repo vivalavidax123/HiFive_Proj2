@@ -24,7 +24,6 @@ public class GameEngine {
 
     // Game state
     private final Hand[] hands;
-    private Hand pack;
 
     // Observers and utilities
     private final List<GameObserver> observers;
@@ -40,8 +39,8 @@ public class GameEngine {
         this.gameUI = gameUI;
         this.logManager = logManager;
         this.hands = hands;
-        this.scores = new int[config.NB_PLAYERS];
-        this.autoIndexHands = new int[config.NB_PLAYERS];
+        this.scores = new int[GameConfigurations.NB_PLAYERS];
+        this.autoIndexHands = new int[GameConfigurations.NB_PLAYERS];
         this.observers = observers;
         this.gameUtilities = gameUtilities;
     }
@@ -54,7 +53,7 @@ public class GameEngine {
 
     // Set up automatic movements for players based on configuration
     public void setupPlayerAutoMovements() {
-        for (int i = 0; i < config.NB_PLAYERS; i++) {
+        for (int i = 0; i < GameConfigurations.NB_PLAYERS; i++) {
             String movements = config.properties.getProperty("players." + i + ".cardsPlayed", "");
             List<String> movementList = Arrays.asList(movements.split(","));
             playerAutoMovements.add(movementList);
@@ -63,9 +62,9 @@ public class GameEngine {
 
     // Deal initial cards to players
     public void dealingOut() {
-        pack = cardManager.getPack();
+        Hand pack = cardManager.getPack();
 
-        for (int i = 0; i < config.NB_PLAYERS; i++) {
+        for (int i = 0; i < GameConfigurations.NB_PLAYERS; i++) {
             String initialCardsKey = "players." + i + ".initialcards";
             String initialCardsValue = config.properties.getProperty(initialCardsKey);
             if (initialCardsValue != null) {
@@ -82,8 +81,8 @@ public class GameEngine {
             }
         }
 
-        for (int i = 0; i < config.NB_PLAYERS; i++) {
-            int cardsToDeal = config.NB_START_CARDS - hands[i].getNumberOfCards();
+        for (int i = 0; i < GameConfigurations.NB_PLAYERS; i++) {
+            int cardsToDeal = GameConfigurations.NB_START_CARDS - hands[i].getNumberOfCards();
             for (int j = 0; j < cardsToDeal; j++) {
                 if (pack.isEmpty())
                     return;
@@ -97,7 +96,7 @@ public class GameEngine {
     // Main game loop
     public void playGame() {
         int roundNumber = 1;
-        for (int i = 0; i < config.NB_PLAYERS; i++)
+        for (int i = 0; i < GameConfigurations.NB_PLAYERS; i++)
             updateScore(i);
 
         logManager.addRoundInfoToLog(roundNumber);
@@ -111,7 +110,7 @@ public class GameEngine {
             if (config.isAuto) {
                 int nextPlayerAutoIndex = autoIndexHands[nextPlayer];
                 List<String> nextPlayerMovement = playerAutoMovements.get(nextPlayer);
-                String nextMovement = "";
+                String nextMovement;
 
                 if (nextPlayerMovement.size() > nextPlayerAutoIndex) {
                     nextMovement = nextPlayerMovement.get(nextPlayerAutoIndex);
@@ -138,7 +137,6 @@ public class GameEngine {
                     hands[0].setTouchEnabled(true);
 
                     gameUI.setStatus("Player 0 is playing. Please double click on a card to discard");
-                    selected = null;
                     cardManager.dealACardToHand(hands[0]);
                     while (null == gameUtilities.getSelectedCard())
                         gameUtilities.delay(config.delayTime);
@@ -155,16 +153,14 @@ public class GameEngine {
             }
 
             logManager.addCardPlayedToLog(nextPlayer, hands[nextPlayer].getCardList());
-            if (selected != null) {
-                selected.setVerso(false);
-                gameUtilities.delay(config.delayTime);
-                notifyCardPlayed(nextPlayer, selected);
-            }
+            selected.setVerso(false);
+            gameUtilities.delay(config.delayTime);
+            notifyCardPlayed(nextPlayer, selected);
 
             scores[nextPlayer] = scoreForHiFive(nextPlayer);
             updateScore(nextPlayer);
             notifyScoreUpdate(nextPlayer, scores[nextPlayer]);
-            nextPlayer = (nextPlayer + 1) % config.NB_PLAYERS;
+            nextPlayer = (nextPlayer + 1) % GameConfigurations.NB_PLAYERS;
 
             if (nextPlayer == 0) {
                 roundNumber++;
