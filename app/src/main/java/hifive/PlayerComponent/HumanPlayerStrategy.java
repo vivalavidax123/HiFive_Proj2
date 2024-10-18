@@ -3,7 +3,7 @@ package hifive.PlayerComponent;
 import ch.aplu.jcardgame.Card;
 import ch.aplu.jcardgame.Hand;
 import hifive.CardComponent.CardManager;
-import hifive.CardComponent.GameConfigurations;
+import hifive.GameConfigurations;
 
 import static ch.aplu.jgamegrid.GameGrid.delay;
 

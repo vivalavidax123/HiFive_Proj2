@@ -5,7 +5,7 @@ import hifive.CardComponent.ICardManager;
 import hifive.GameObserver;
 import hifive.LogComponent.ILogManager;
 import hifive.UIComponent.IUIManager;
-import hifive.CardComponent.GameConfigurations;
+import hifive.GameConfigurations;
 
 import java.util.*;
 

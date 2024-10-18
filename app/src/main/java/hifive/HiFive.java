@@ -2,7 +2,6 @@ package hifive;
 
 import ch.aplu.jcardgame.*;
 import hifive.CardComponent.CardManager;
-import hifive.CardComponent.GameConfigurations;
 import hifive.CardComponent.ICardManager;
 import hifive.Enumeration.Rank;
 import hifive.Enumeration.Suit;

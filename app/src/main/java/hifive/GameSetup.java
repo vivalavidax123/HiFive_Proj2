@@ -1,6 +1,5 @@
 package hifive;
 
-import hifive.CardComponent.GameConfigurations;
 import hifive.GameEngine.GameComponentFactory;
 import hifive.GameEngine.ScoringStrategy;
 import hifive.GameEngine.StandardGameComponentFactory;

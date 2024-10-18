@@ -2,7 +2,7 @@ package hifive.UIComponent;
 
 import ch.aplu.jcardgame.*;
 import ch.aplu.jgamegrid.*;
-import hifive.CardComponent.GameConfigurations;
+import hifive.GameConfigurations;
 
 import java.awt.*;
 import java.util.List;
