@@ -1,4 +1,4 @@
-name: Project 2-Workflow
+name: workflow_proj2
 
 on: [workflow_dispatch]
 
@@ -10,7 +10,7 @@ permissions:
 jobs:
   build:
     name: Autograding
-    runs-on: [self-hosted]
+    runs-on: ubuntu-latest  # Change this line to use a GitHub-hosted runner
     steps:
       - uses: actions/checkout@v2
       - uses: education/autograding@v1
