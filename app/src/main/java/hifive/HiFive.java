@@ -3,7 +3,6 @@ package hifive;
 import ch.aplu.jcardgame.*;
 
 import ch.aplu.jgamegrid.GameGrid;
-import hifive.CardComponent.*;
 import hifive.Enumeration.*;
 import hifive.GameEngine.*;
 import hifive.LogComponent.*;
@@ -11,11 +10,10 @@ import hifive.UIComponent.*;
 
 import java.util.*;
 
-public class HiFive extends CardGame implements IGameUtilities {
+public class HiFive extends CardGame {
     // Configuration and game components
     private final GameConfigurations config;
     private final Deck deck;
-    private final ICardManager cardManager;
     private final IUIManager gameUI;
     private final ILogManager logManager = LogManager.getInstance();
 
@@ -37,7 +35,6 @@ public class HiFive extends CardGame implements IGameUtilities {
         // Initialize game components
         this.config = new GameConfigurations(properties);
         this.deck = new Deck(Suit.values(), Rank.values(), "cover");
-        this.cardManager = new CardManager(new Random(GameConfigurations.SEED), config);
         this.gameUI = new UIManager(config, this);
 
         // Initialize player-related fields
@@ -53,12 +50,10 @@ public class HiFive extends CardGame implements IGameUtilities {
         // Initialize game engine
         gameEngine = new GameEngine(
                 config,
-                cardManager,
                 gameUI,
                 logManager,
                 hands,
-                observers,
-                this
+                observers
         );
 
         // Deal initial cards
@@ -86,22 +81,6 @@ public class HiFive extends CardGame implements IGameUtilities {
     // Initialize the score display in the game UI
     private void initScore() {
         gameUI.initScore();
-    }
-
-    // Implement IGameUtilities methods
-    @Override
-    public Card getSelectedCard() {
-        return selected;
-    }
-
-    @Override
-    public void setSelectedCard(Card card) {
-        this.selected = card;
-    }
-
-    @Override
-    public void delay(int time) {
-        GameGrid.delay(time);
     }
 
     // Main method to run the HiFive game application

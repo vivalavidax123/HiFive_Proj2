@@ -1,6 +1,8 @@
 package hifive.GameEngine;
 
 import ch.aplu.jcardgame.*;
+import ch.aplu.jgamegrid.GameGrid;
+import hifive.CardComponent.CardManager;
 import hifive.CardComponent.ICardManager;
 import hifive.GameObserver;
 import hifive.LogComponent.ILogManager;
@@ -26,22 +28,20 @@ public class GameEngine {
 
     // Observers and utilities
     private final List<GameObserver> observers;
-    private final IGameUtilities gameUtilities; // Reference to utilities
 
     // Constructor
-    public GameEngine(GameConfigurations config, ICardManager cardManager,
+    public GameEngine(GameConfigurations config,
                       IUIManager gameUI, ILogManager logManager, Hand[] hands,
-                      List<GameObserver> observers, IGameUtilities gameUtilities) {
+                      List<GameObserver> observers) {
         this.config = config;
         this.scoringStrategies = new StandardGameComponentFactory().createScoringStrategies(config);
-        this.cardManager = cardManager;
+        this.cardManager = new CardManager(new Random(GameConfigurations.SEED), config);
         this.gameUI = gameUI;
         this.logManager = logManager;
         this.hands = hands;
         this.scores = new int[GameConfigurations.NB_PLAYERS];
         this.autoIndexHands = new int[GameConfigurations.NB_PLAYERS];
         this.observers = observers;
-        this.gameUtilities = gameUtilities;
     }
 
 
@@ -119,7 +119,7 @@ public class GameEngine {
                     Hand nextHand = hands[nextPlayer];
 
                     selected = cardManager.applyAutoMovement(nextHand, nextMovement);
-                    gameUtilities.delay(config.delayTime);
+                    GameGrid.delay(config.delayTime);
                     if (selected != null) {
                         selected.removeFromHand(true);
                     } else {
@@ -137,15 +137,12 @@ public class GameEngine {
 
                     gameUI.setStatus("Player 0 is playing. Please double click on a card to discard");
                     cardManager.dealACardToHand(hands[0]);
-                    while (null == gameUtilities.getSelectedCard())
-                        gameUtilities.delay(config.delayTime);
-                    selected = gameUtilities.getSelectedCard();
-                    gameUtilities.setSelectedCard(null);
+                    while (null == selected)
+                        GameGrid.delay(config.delayTime);
                     selected.removeFromHand(true);
                     hands[0].setTouchEnabled(false);
                 } else {
                     gameUI.setStatus("Player " + nextPlayer + " is thinking...");
-                    gameUtilities.delay(config.delayTime);
                     selected = cardManager.getRandomCard(hands[nextPlayer]);
                     selected.removeFromHand(true);
                 }
@@ -153,7 +150,7 @@ public class GameEngine {
 
             logManager.addCardPlayedToLog(nextPlayer, hands[nextPlayer].getCardList());
             selected.setVerso(false);
-            gameUtilities.delay(config.delayTime);
+            GameGrid.delay(config.delayTime);
             notifyCardPlayed(nextPlayer, selected);
 
             scores[nextPlayer] = scoreForHiFive(nextPlayer);
@@ -174,7 +171,7 @@ public class GameEngine {
             if (roundNumber > 4) {
                 calculateScoreEndOfRound();
             }
-            gameUtilities.delay(config.delayTime);
+            GameGrid.delay(config.delayTime);
         }
     }
 
