@@ -19,7 +19,6 @@ public class StandardGameComponentFactory implements GameComponentFactory {
     }
 
     // Creates and returns an array of player strategies based on game configuration
-    @Override
     public PlayerStrategy[] createPlayerStrategies(GameConfigurations config) {
         PlayerStrategy[] strategies = new PlayerStrategy[GameConfigurations.NB_PLAYERS];
         for(int i = 0; i < GameConfigurations.NB_PLAYERS; i++) {

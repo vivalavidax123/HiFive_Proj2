@@ -19,9 +19,6 @@ public class HiFive extends CardGame implements IGameUtilities {
     private final IUIManager gameUI;
     private final ILogManager logManager = LogManager.getInstance();
 
-    // Game setup
-    private final GameSetup gameSetup;
-
     // Player-related fields
 
     // Game state
@@ -39,7 +36,6 @@ public class HiFive extends CardGame implements IGameUtilities {
         super(700, 700, 30);
         // Initialize game components
         this.config = new GameConfigurations(properties);
-        this.gameSetup = new GameSetup(config);
         this.deck = new Deck(Suit.values(), Rank.values(), "cover");
         this.cardManager = new CardManager(new Random(GameConfigurations.SEED), config);
         this.gameUI = new UIManager(config, this);
@@ -57,7 +53,6 @@ public class HiFive extends CardGame implements IGameUtilities {
         // Initialize game engine
         gameEngine = new GameEngine(
                 config,
-                gameSetup.getScoringStrategies(),
                 cardManager,
                 gameUI,
                 logManager,

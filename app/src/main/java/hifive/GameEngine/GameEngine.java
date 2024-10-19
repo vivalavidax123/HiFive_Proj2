@@ -16,7 +16,6 @@ public class GameEngine {
     private final ICardManager cardManager;
     private final IUIManager gameUI;
     private final ILogManager logManager;
-
     // Player-related fields
     private final int[] scores;
     private final int[] autoIndexHands;
@@ -30,11 +29,11 @@ public class GameEngine {
     private final IGameUtilities gameUtilities; // Reference to utilities
 
     // Constructor
-    public GameEngine(GameConfigurations config, List<ScoringStrategy> scoringStrategies, ICardManager cardManager,
+    public GameEngine(GameConfigurations config, ICardManager cardManager,
                       IUIManager gameUI, ILogManager logManager, Hand[] hands,
                       List<GameObserver> observers, IGameUtilities gameUtilities) {
         this.config = config;
-        this.scoringStrategies = scoringStrategies;
+        this.scoringStrategies = new StandardGameComponentFactory().createScoringStrategies(config);
         this.cardManager = cardManager;
         this.gameUI = gameUI;
         this.logManager = logManager;

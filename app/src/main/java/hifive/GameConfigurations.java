@@ -16,7 +16,6 @@ public class GameConfigurations {
     public static final int HAND_WIDTH = 400;
     public static final int TRICK_WIDTH = 40;
     public static final String VERSION = "1.0";
-
     // Locations for UI elements (now static)
     public static final Location[] HAND_LOCATIONS = {
             new Location(350, 625),
