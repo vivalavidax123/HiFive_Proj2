@@ -3,7 +3,7 @@ package hifive.Managers;
 import ch.aplu.jcardgame.*;
 import hifive.Enum.Rank;
 import hifive.Enum.Suit;
-import hifive.GameConfigurations;
+import hifive.Game.GameConfigurations;
 
 import java.util.*;
 import static ch.aplu.jgamegrid.GameGrid.delay;
@@ -16,7 +16,7 @@ public class CardManager {
 
     public CardManager(GameConfigurations config) {
         this.gameConfig = config;
-        this.random = new Random(config.SEED);
+        this.random = new Random(GameConfigurations.SEED);
         this.deck = new Deck(Suit.values(), Rank.values(), "cover");
         this.pack = deck.toHand(false);
     }
@@ -96,7 +96,7 @@ public class CardManager {
 
     // Deals cards to players based on the configuration
     public void dealingOut(Hand[] hands, GameConfigurations config) {
-        for (int i = 0; i < config.NB_PLAYERS; i++) {
+        for (int i = 0; i < GameConfigurations.NB_PLAYERS; i++) {
             String initialCardsKey = "players." + i + ".initialcards";
             String initialCardsValue = config.properties.getProperty(initialCardsKey);
             if (initialCardsValue == null) {
@@ -115,8 +115,8 @@ public class CardManager {
             }
         }
 
-        for (int i = 0; i < config.NB_PLAYERS; i++) {
-            int cardsToDeal = config.NB_START_CARDS - hands[i].getNumberOfCards();
+        for (int i = 0; i < GameConfigurations.NB_PLAYERS; i++) {
+            int cardsToDeal = GameConfigurations.NB_START_CARDS - hands[i].getNumberOfCards();
             for (int j = 0; j < cardsToDeal; j++) {
                 if (pack.isEmpty())
                     return;

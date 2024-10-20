@@ -1,4 +1,4 @@
-package hifive;
+package hifive.Game;
 
 import ch.aplu.jcardgame.*;
 import hifive.Managers.*;
@@ -28,7 +28,7 @@ public class GameFacade {
         PlayerStrategy[] playerStrategies = factory.createPlayerStrategies(config);
 
         // Initialize scores array based on the number of players
-        int[] scores = new int[config.NB_PLAYERS];
+        int[] scores = new int[GameConfigurations.NB_PLAYERS];
 
         // Initialize the game engine, passing all necessary components
         this.gameEngine = new GameEngine(config, deck, cardManager, gameUI, logManager, observerManager,

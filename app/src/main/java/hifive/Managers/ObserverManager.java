@@ -1,7 +1,7 @@
 package hifive.Managers;
 
 import ch.aplu.jcardgame.Card;
-import hifive.GameObserver;
+import hifive.Game.GameObserver;
 
 import java.util.ArrayList;
 import java.util.List;

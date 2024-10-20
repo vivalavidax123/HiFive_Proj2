@@ -1,4 +1,4 @@
-package hifive;
+package hifive.Game;
 
 import ch.aplu.jgamegrid.Location;
 

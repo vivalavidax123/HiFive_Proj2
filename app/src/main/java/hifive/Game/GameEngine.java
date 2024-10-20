@@ -1,4 +1,4 @@
-package hifive;
+package hifive.Game;
 
 import ch.aplu.jcardgame.*;
 import hifive.Managers.CardManager;
@@ -23,8 +23,6 @@ public class GameEngine {
     private final int[] scores;
     private final List<List<String>> playerAutoMovements;
     private Hand[] hands;
-    private Hand playingArea;
-    private Hand pack;
     private final int[] autoIndexHands;
     private Card selected;
     private List<Integer> winners;
@@ -42,16 +40,15 @@ public class GameEngine {
         this.playerStrategies = playerStrategies;
         this.scores = scores;
         this.playerAutoMovements = new ArrayList<>();
-        this.hands = new Hand[config.NB_PLAYERS];
-        this.autoIndexHands = new int[config.NB_PLAYERS];
+        this.hands = new Hand[GameConfigurations.NB_PLAYERS];
+        this.autoIndexHands = new int[GameConfigurations.NB_PLAYERS];
 
         initializeGame(); // Initialize the game as part of the constructor
     }
 
     private void initializeGame() {
-        hands = cardManager.initHands(config.NB_PLAYERS);
-        playingArea = new Hand(deck);
-        pack = deck.toHand(false);
+        hands = cardManager.initHands(GameConfigurations.NB_PLAYERS);
+        Hand playingArea = new Hand(deck);
         cardManager.dealingOut(hands, config);
         setupPlayerAutoMovements();
         gameUI.setupCardLayout(hands, playingArea);  // Directly call the method
@@ -59,8 +56,8 @@ public class GameEngine {
 
     // Sets up automatic player movements for testing or simulations
     private void setupPlayerAutoMovements() {
-        String[] playerMovements = new String[config.NB_PLAYERS];
-        for (int i = 0; i < config.NB_PLAYERS; i++) {
+        String[] playerMovements = new String[GameConfigurations.NB_PLAYERS];
+        for (int i = 0; i < GameConfigurations.NB_PLAYERS; i++) {
             playerMovements[i] = config.properties.getProperty("players." + i + ".cardsPlayed", "");
         }
 
@@ -70,18 +67,13 @@ public class GameEngine {
         }
     }
 
-    // Sets up the card layout in the UI
-    private void setupCardLayout() {
-        gameUI.setupCardLayout(hands, playingArea);
-    }
-
     // Main game loop controlling the flow of the game
     public void playGame() {
         gameUI.setStatus("Initializing...");
         initScores();
         gameUI.initScore();
         int roundNumber = 1;
-        for (int i = 0; i < config.NB_PLAYERS; i++) {
+        for (int i = 0; i < GameConfigurations.NB_PLAYERS; i++) {
             updateScore(i);
         }
         logManager.addRoundInfoToLog(roundNumber);
@@ -93,7 +85,7 @@ public class GameEngine {
             if (config.isAuto) {
                 int nextPlayerAutoIndex = autoIndexHands[nextPlayer];
                 List<String> nextPlayerMovement = playerAutoMovements.get(nextPlayer);
-                String nextMovement = "";
+                String nextMovement;
                 if (nextPlayerMovement.size() > nextPlayerAutoIndex) {
                     nextMovement = nextPlayerMovement.get(nextPlayerAutoIndex);
                     nextPlayerAutoIndex++;
@@ -137,7 +129,7 @@ public class GameEngine {
             scores[nextPlayer] = scoringManager.calculateScoreForPlayer(hands[nextPlayer].getCardList());
             updateScore(nextPlayer);
             observerManager.notifyScoreUpdate(nextPlayer, scores[nextPlayer]);
-            nextPlayer = (nextPlayer + 1) % config.NB_PLAYERS;
+            nextPlayer = (nextPlayer + 1) % GameConfigurations.NB_PLAYERS;
             if (nextPlayer == 0) {
                 roundNumber++;
                 logManager.addEndOfRoundToLog(scores);
@@ -180,12 +172,12 @@ public class GameEngine {
     }
 
     private void finalizeGame() {
-        for (int i = 0; i < config.NB_PLAYERS; i++) {
+        for (int i = 0; i < GameConfigurations.NB_PLAYERS; i++) {
             updateScore(i);
         }
         int maxScore = Arrays.stream(scores).max().orElse(0);
         winners = new ArrayList<>();
-        for (int i = 0; i < config.NB_PLAYERS; i++) {
+        for (int i = 0; i < GameConfigurations.NB_PLAYERS; i++) {
             if (scores[i] == maxScore) {
                 winners.add(i);
             }

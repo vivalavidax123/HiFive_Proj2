@@ -1,4 +1,4 @@
-package hifive;
+package hifive.Game;
 
 import hifive.Player.PlayerStrategy;
 import hifive.ScoringStrategy.ScoringStrategy;

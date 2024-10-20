@@ -2,29 +2,27 @@ package hifive.Managers;
 
 import ch.aplu.jcardgame.*;
 import ch.aplu.jgamegrid.*;
-import hifive.GameConfigurations;
+import hifive.Game.GameConfigurations;
 
 import java.awt.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class UIManager {
-    private final GameConfigurations config;
     private final CardGame game;
     private final Actor[] scoreActors;
 
-    public UIManager(GameConfigurations config, CardGame game) {
-        this.config = config;
+    public UIManager(CardGame game) {
         this.game = game;
-        this.scoreActors = new Actor[config.NB_PLAYERS];
+        this.scoreActors = new Actor[GameConfigurations.NB_PLAYERS];
     }
 
     // Initialize the score display for all players
     public void initScore() {
-        for (int i = 0; i < config.NB_PLAYERS; i++) {
+        for (int i = 0; i < GameConfigurations.NB_PLAYERS; i++) {
             String text = "[0]";
             scoreActors[i] = new TextActor(text, Color.WHITE, game.bgColor, new Font("Arial", Font.BOLD, 36));
-            game.addActor(scoreActors[i], config.SCORE_LOCATIONS[i]);
+            game.addActor(scoreActors[i], GameConfigurations.SCORE_LOCATIONS[i]);
         }
     }
 
@@ -34,7 +32,7 @@ public class UIManager {
         int displayScore = Math.max(score, 0);
         String text = "P" + player + "[" + displayScore + "]";
         scoreActors[player] = new TextActor(text, Color.WHITE, game.bgColor, new Font("Arial", Font.BOLD, 36));
-        game.addActor(scoreActors[player], config.SCORE_LOCATIONS[player]);
+        game.addActor(scoreActors[player], GameConfigurations.SCORE_LOCATIONS[player]);
     }
 
     // Set the status text in the game UI
@@ -44,15 +42,15 @@ public class UIManager {
 
     // Set up the card layout for all players and the playing area
     public void setupCardLayout(Hand[] hands, Hand playingArea) {
-        playingArea.setView(game, new RowLayout(config.TRICK_LOCATION, (playingArea.getNumberOfCards() + 2) * config.TRICK_WIDTH));
+        playingArea.setView(game, new RowLayout(GameConfigurations.TRICK_LOCATION, (playingArea.getNumberOfCards() + 2) * GameConfigurations.TRICK_WIDTH));
         playingArea.draw();
 
-        RowLayout[] layouts = new RowLayout[config.NB_PLAYERS];
-        for (int i = 0; i < config.NB_PLAYERS; i++) {
-            layouts[i] = new RowLayout(config.HAND_LOCATIONS[i], config.HAND_WIDTH);
+        RowLayout[] layouts = new RowLayout[GameConfigurations.NB_PLAYERS];
+        for (int i = 0; i < GameConfigurations.NB_PLAYERS; i++) {
+            layouts[i] = new RowLayout(GameConfigurations.HAND_LOCATIONS[i], GameConfigurations.HAND_WIDTH);
             layouts[i].setRotationAngle(90 * i);
             hands[i].setView(game, layouts[i]);
-            hands[i].setTargetArea(new TargetArea(config.TRICK_LOCATION));
+            hands[i].setTargetArea(new TargetArea(GameConfigurations.TRICK_LOCATION));
             hands[i].draw();
         }
     }
@@ -65,7 +63,7 @@ public class UIManager {
         } else {
             winText = "Game Over. Drawn winners are players: " + winners.stream().map(String::valueOf).collect(Collectors.joining(", "));
         }
-        game.addActor(new Actor("sprites/gameover.gif"), config.TEXT_LOCATION);
+        game.addActor(new Actor("sprites/gameover.gif"), GameConfigurations.TEXT_LOCATION);
         setStatus(winText);
         game.refresh();
     }
