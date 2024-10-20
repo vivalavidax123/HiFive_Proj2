@@ -61,6 +61,4 @@ public class GameFacade {
     public List<Integer> getWinners() {
         return gameEngine.getWinners();
     }
-
-    // Other methods to interact with the game engine can be added here
 }
