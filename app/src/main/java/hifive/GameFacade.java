@@ -5,18 +5,14 @@ import java.util.*;
 
 public class GameFacade {
     private final GameEngine gameEngine;
-    private final GameInitializer gameInitializer;
-    private final UIManager gameUI;
     private final ILogManager logManager;
-    private final IObserverManager observerManager;
 
     public GameFacade(GameConfigurations config, Deck deck, CardManager cardManager, UIManager gameUI) {
-        this.gameUI = gameUI;
         this.logManager = new LogManager(); // Create a new instance
-        this.observerManager = new ObserverManager();
+        IObserverManager observerManager = new ObserverManager();
 
         // Initialize the game
-        this.gameInitializer = new GameInitializer(config, deck, cardManager, gameUI);
+        GameInitializer gameInitializer = new GameInitializer(config, deck, cardManager, gameUI);
         gameInitializer.initGame();
 
         // Get initialized components
