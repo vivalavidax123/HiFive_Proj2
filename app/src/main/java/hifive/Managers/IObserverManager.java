@@ -1,6 +1,8 @@
-package hifive;
+package hifive.Managers;
 
 import ch.aplu.jcardgame.Card;
+import hifive.GameObserver;
+
 import java.util.List;
 
 public interface IObserverManager {

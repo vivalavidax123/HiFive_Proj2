@@ -1,7 +1,9 @@
-package hifive;
+package hifive.Managers;
 
 import ch.aplu.jcardgame.*;
 import ch.aplu.jgamegrid.*;
+import hifive.GameConfigurations;
+
 import java.awt.*;
 import java.util.List;
 import java.util.stream.Collectors;

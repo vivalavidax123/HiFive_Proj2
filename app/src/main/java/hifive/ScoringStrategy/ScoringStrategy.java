@@ -1,4 +1,4 @@
-package hifive;
+package hifive.ScoringStrategy;
 
 import ch.aplu.jcardgame.Card;
 

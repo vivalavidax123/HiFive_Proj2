@@ -1,6 +1,10 @@
-package hifive;
+package hifive.Managers;
 
 import ch.aplu.jcardgame.*;
+import hifive.Enum.Rank;
+import hifive.Enum.Suit;
+import hifive.GameConfigurations;
+
 import java.util.*;
 import static ch.aplu.jgamegrid.GameGrid.delay;
 
@@ -39,7 +43,7 @@ public class CardManager {
     }
 
     // Deal a card to the given hand
-    void dealACardToHand(Hand hand) {
+    public void dealACardToHand(Hand hand) {
         if (pack.isEmpty())
             return;
         Card dealt = randomCard(pack.getCardList());
@@ -61,7 +65,7 @@ public class CardManager {
     }
 
     // Apply automatic movement for a player
-    Card applyAutoMovement(Hand hand, String nextMovement) {
+    public Card applyAutoMovement(Hand hand, String nextMovement) {
         if (pack.isEmpty())
             return null;
         String[] cardStrings = nextMovement.split("-");
@@ -79,6 +83,47 @@ public class CardManager {
             return getCardFromList(hand.getCardList(), cardDiscardString);
         } else {
             return null;
+        }
+    }
+    // Initializes player hands
+    public Hand[] initHands(int numPlayers) {
+        Hand[] hands = new Hand[numPlayers];
+        for (int i = 0; i < numPlayers; i++) {
+            hands[i] = new Hand(deck);
+        }
+        return hands;
+    }
+
+    // Deals cards to players based on the configuration
+    public void dealingOut(Hand[] hands, GameConfigurations config) {
+        for (int i = 0; i < config.NB_PLAYERS; i++) {
+            String initialCardsKey = "players." + i + ".initialcards";
+            String initialCardsValue = config.properties.getProperty(initialCardsKey);
+            if (initialCardsValue == null) {
+                continue;
+            }
+            String[] initialCards = initialCardsValue.split(",");
+            for (String initialCard : initialCards) {
+                if (initialCard.length() <= 1) {
+                    continue;
+                }
+                Card card = getCardFromList(getPack().getCardList(), initialCard);
+                if (card != null) {
+                    card.removeFromHand(false);
+                    hands[i].insert(card, false);
+                }
+            }
+        }
+
+        for (int i = 0; i < config.NB_PLAYERS; i++) {
+            int cardsToDeal = config.NB_START_CARDS - hands[i].getNumberOfCards();
+            for (int j = 0; j < cardsToDeal; j++) {
+                if (pack.isEmpty())
+                    return;
+                Card dealt = randomCard(getPack().getCardList());
+                dealt.removeFromHand(false);
+                hands[i].insert(dealt, false);
+            }
         }
     }
 }

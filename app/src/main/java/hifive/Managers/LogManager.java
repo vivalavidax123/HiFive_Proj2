@@ -1,6 +1,9 @@
-package hifive;
+package hifive.Managers;
 
 import ch.aplu.jcardgame.Card;
+import hifive.Enum.Rank;
+import hifive.Enum.Suit;
+
 import java.util.List;
 import java.util.stream.Collectors;
 

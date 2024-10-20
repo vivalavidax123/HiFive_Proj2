@@ -1,7 +1,10 @@
-package hifive;
+package hifive.Player;
 
 import ch.aplu.jcardgame.Card;
 import ch.aplu.jcardgame.Hand;
+import hifive.Enum.Rank;
+import hifive.Enum.Suit;
+import hifive.Managers.CardManager;
 
 import java.util.HashSet;
 import java.util.List;

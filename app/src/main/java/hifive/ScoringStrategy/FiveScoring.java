@@ -1,6 +1,8 @@
-package hifive;
+package hifive.ScoringStrategy;
 
 import ch.aplu.jcardgame.Card;
+import hifive.Enum.Rank;
+import hifive.Enum.Suit;
 
 import java.util.List;
 

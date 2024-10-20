@@ -1,4 +1,4 @@
-package hifive;
+package hifive.Managers;
 
 import ch.aplu.jcardgame.Card;
 import java.util.List;

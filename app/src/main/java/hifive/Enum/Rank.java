@@ -1,4 +1,4 @@
-package hifive;
+package hifive.Enum;
 
 import java.util.Arrays;
 import java.util.List;

@@ -1,6 +1,11 @@
 package hifive;
 
 import ch.aplu.jcardgame.*;
+import hifive.Managers.*;
+import hifive.Player.PlayerStrategy;
+import hifive.ScoringStrategy.ScoringManager;
+import hifive.ScoringStrategy.ScoringStrategy;
+
 import java.util.*;
 
 public class GameFacade {

@@ -1,7 +1,9 @@
-package hifive;
+package hifive.Player;
 
 import ch.aplu.jcardgame.Card;
 import ch.aplu.jcardgame.Hand;
+import hifive.GameConfigurations;
+import hifive.Managers.CardManager;
 
 import static ch.aplu.jgamegrid.GameGrid.delay;
 

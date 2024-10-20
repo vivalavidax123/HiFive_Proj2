@@ -1,4 +1,7 @@
 package hifive;
+import hifive.Player.*;
+import hifive.ScoringStrategy.*;
+
 import java.util.ArrayList;
 import java.util.List;
 

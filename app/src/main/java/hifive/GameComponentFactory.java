@@ -1,5 +1,8 @@
 package hifive;
 
+import hifive.Player.PlayerStrategy;
+import hifive.ScoringStrategy.ScoringStrategy;
+
 import java.util.List;
 
 public interface GameComponentFactory {

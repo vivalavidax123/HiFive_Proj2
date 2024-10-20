@@ -1,6 +1,13 @@
 package hifive;
 
 import ch.aplu.jcardgame.*;
+import hifive.Managers.CardManager;
+import hifive.Managers.ILogManager;
+import hifive.Managers.IObserverManager;
+import hifive.Managers.UIManager;
+import hifive.Player.PlayerStrategy;
+import hifive.ScoringStrategy.ScoringManager;
+
 import java.util.*;
 import static ch.aplu.jgamegrid.GameGrid.delay;
 
@@ -15,7 +22,7 @@ public class GameEngine {
     private final PlayerStrategy[] playerStrategies;
     private final int[] scores;
     private final List<List<String>> playerAutoMovements;
-    private final Hand[] hands;
+    private Hand[] hands;
     private Hand playingArea;
     private Hand pack;
     private final int[] autoIndexHands;
@@ -42,52 +49,12 @@ public class GameEngine {
     }
 
     private void initializeGame() {
-        initHands();
-        dealingOut();
-        setupPlayerAutoMovements();
-        setupCardLayout();
-    }
-
-    // Initializes player hands and the playing area
-    private void initHands() {
-        for (int i = 0; i < config.NB_PLAYERS; i++) {
-            hands[i] = new Hand(deck);
-        }
+        hands = cardManager.initHands(config.NB_PLAYERS);
         playingArea = new Hand(deck);
         pack = deck.toHand(false);
-    }
-
-    // Deals cards to players based on the configuration
-    private void dealingOut() {
-        for (int i = 0; i < config.NB_PLAYERS; i++) {
-            String initialCardsKey = "players." + i + ".initialcards";
-            String initialCardsValue = config.properties.getProperty(initialCardsKey);
-            if (initialCardsValue == null) {
-                continue;
-            }
-            String[] initialCards = initialCardsValue.split(",");
-            for (String initialCard : initialCards) {
-                if (initialCard.length() <= 1) {
-                    continue;
-                }
-                Card card = cardManager.getCardFromList(cardManager.getPack().getCardList(), initialCard);
-                if (card != null) {
-                    card.removeFromHand(false);
-                    hands[i].insert(card, false);
-                }
-            }
-        }
-
-        for (int i = 0; i < config.NB_PLAYERS; i++) {
-            int cardsToDeal = config.NB_START_CARDS - hands[i].getNumberOfCards();
-            for (int j = 0; j < cardsToDeal; j++) {
-                if (pack.isEmpty())
-                    return;
-                Card dealt = cardManager.randomCard(cardManager.getPack().getCardList());
-                dealt.removeFromHand(false);
-                hands[i].insert(dealt, false);
-            }
-        }
+        cardManager.dealingOut(hands, config);
+        setupPlayerAutoMovements();
+        gameUI.setupCardLayout(hands, playingArea);  // Directly call the method
     }
 
     // Sets up automatic player movements for testing or simulations

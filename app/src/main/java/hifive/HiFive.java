@@ -1,6 +1,11 @@
 package hifive;
 
 import ch.aplu.jcardgame.*;
+import hifive.Enum.Rank;
+import hifive.Enum.Suit;
+import hifive.Managers.CardManager;
+import hifive.Managers.UIManager;
+
 import java.util.*;
 
 public class HiFive extends CardGame {

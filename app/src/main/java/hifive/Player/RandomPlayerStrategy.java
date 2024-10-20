@@ -1,7 +1,8 @@
-package hifive;
+package hifive.Player;
 
 import ch.aplu.jcardgame.Card;
 import ch.aplu.jcardgame.Hand;
+import hifive.Managers.CardManager;
 
 public class RandomPlayerStrategy implements PlayerStrategy {
 
