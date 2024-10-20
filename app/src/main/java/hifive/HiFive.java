@@ -8,7 +8,6 @@ import java.util.*;
 public class HiFive extends CardGame {
     // Configuration and game components
     private final GameConfigurations config;
-    private final Random random;
     private final Deck deck;
     private final CardManager cardManager;
     private final UIManager gameUI;
@@ -28,16 +27,15 @@ public class HiFive extends CardGame {
 
     // Scoring and observers
     private final List<ScoringStrategy> scoringStrategies;
-    private final List<GameObserver> observers = new ArrayList<>();
+    private final ObserverManager observerManager = new ObserverManager();
 
     // Constructor
     public HiFive(Properties properties) {
         super(700, 700, 30);
         // Initialize game components
         this.config = new GameConfigurations(properties);
-        this.random = new Random(config.SEED);
         this.deck = new Deck(Suit.values(), Rank.values(), "cover");
-        this.cardManager = new CardManager(random, config);
+        this.cardManager = new CardManager(config);
         this.gameUI = new UIManager(config, this);
 
         // Initialize player-related fields
@@ -144,7 +142,7 @@ public class HiFive extends CardGame {
 
         List<Card> cardsPlayed = new ArrayList<>();
         logManager.addRoundInfoToLog(roundNumber);
-        notifyRoundStart(roundNumber);
+        observerManager.notifyRoundStart(roundNumber);
 
         int nextPlayer = 0;
         while(roundNumber <= 4) {
@@ -198,12 +196,12 @@ public class HiFive extends CardGame {
                 cardsPlayed.add(selected);
                 selected.setVerso(false);
                 delay(config.delayTime);
-                notifyCardPlayed(nextPlayer, selected);
+                observerManager.notifyCardPlayed(nextPlayer, selected);
             }
 
             scores[nextPlayer] = scoreForHiFive(nextPlayer);
             updateScore(nextPlayer);
-            notifyScoreUpdate(nextPlayer, scores[nextPlayer]);
+            observerManager.notifyScoreUpdate(nextPlayer, scores[nextPlayer]);
             nextPlayer = (nextPlayer + 1) % config.NB_PLAYERS;
 
             if(nextPlayer == 0) {
@@ -212,7 +210,7 @@ public class HiFive extends CardGame {
 
                 if(roundNumber <= 4) {
                     logManager.addRoundInfoToLog(roundNumber);
-                    notifyRoundStart(roundNumber);
+                    observerManager.notifyRoundStart(roundNumber);
                 }
             }
 
@@ -262,46 +260,8 @@ public class HiFive extends CardGame {
 
         gameUI.showGameOver(winners);
         logManager.addEndOfGameToLog(scores, winners);
-        notifyGameOver(scores, winners);
+        observerManager.notifyGameOver(scores, winners);
 
         return logManager.getLogResult();
-    }
-
-    // Add an observer to the game for event notifications
-    public void addObserver(GameObserver observer) {
-        observers.add(observer);
-    }
-
-    // Remove an observer from the game
-    public void removeObserver(GameObserver observer) {
-        observers.remove(observer);
-    }
-
-    // Notify all observers that a new round has started
-    private void notifyRoundStart(int roundNumber) {
-        for(GameObserver observer : observers) {
-            observer.onRoundStart(roundNumber);
-        }
-    }
-
-    // Notify all observers that a card has been played
-    private void notifyCardPlayed(int player, Card card) {
-        for(GameObserver observer : observers) {
-            observer.onCardPlayed(player, card);
-        }
-    }
-
-    // Notify all observers that a player's score has been updated
-    private void notifyScoreUpdate(int player, int newScore) {
-        for(GameObserver observer : observers) {
-            observer.onScoreUpdate(player, newScore);
-        }
-    }
-
-    // Notify all observers that the game has ended
-    private void notifyGameOver(int[] finalScores, List<Integer> winners) {
-        for(GameObserver observer : observers) {
-            observer.onGameOver(finalScores, winners);
-        }
     }
 }

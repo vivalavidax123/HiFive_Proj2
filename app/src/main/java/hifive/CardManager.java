@@ -10,9 +10,9 @@ public class CardManager {
     private final Deck deck;
     private final Hand pack;
 
-    public CardManager(Random random, GameConfigurations config) {
+    public CardManager(GameConfigurations config) {
         this.gameConfig = config;
-        this.random = random;
+        this.random = new Random(config.SEED);
         this.deck = new Deck(Suit.values(), Rank.values(), "cover");
         this.pack = deck.toHand(false);
     }
