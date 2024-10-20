@@ -42,8 +42,8 @@ public class GameEngine {
         this.playerAutoMovements = new ArrayList<>();
         this.hands = new Hand[GameConfigurations.NB_PLAYERS];
         this.autoIndexHands = new int[GameConfigurations.NB_PLAYERS];
-
-        initializeGame(); // Initialize the game as part of the constructor
+        // Initialize the game as part of the constructor
+        initializeGame();
     }
 
     private void initializeGame() {
