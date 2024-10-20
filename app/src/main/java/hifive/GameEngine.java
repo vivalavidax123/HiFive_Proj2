@@ -41,6 +41,8 @@ public class GameEngine {
 
     // Main game loop controlling the flow of the game
     public void playGame() {
+        gameUI.setStatus("Initializing...");  // Moved setStatus here
+
         initScores();
         gameUI.initScore();
 

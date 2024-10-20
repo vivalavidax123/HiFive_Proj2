@@ -43,6 +43,7 @@ public class GameFacade {
     }
 
     // Start the game
+    // Start the game
     public void startGame() {
         gameEngine.playGame();
     }
