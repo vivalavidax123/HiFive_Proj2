@@ -6,6 +6,7 @@ import static ch.aplu.jgamegrid.GameGrid.delay;
 
 public class GameEngine {
     private final GameConfigurations config;
+    private final Deck deck;
     private final CardManager cardManager;
     private final UIManager gameUI;
     private final ILogManager logManager;
@@ -15,16 +16,17 @@ public class GameEngine {
     private final int[] scores;
     private final List<List<String>> playerAutoMovements;
     private final Hand[] hands;
-    private final Hand playingArea;
-    private final Hand pack;
+    private Hand playingArea;
+    private Hand pack;
     private final int[] autoIndexHands;
     private Card selected;
     private List<Integer> winners;
 
-    public GameEngine(GameConfigurations config, CardManager cardManager, UIManager gameUI, ILogManager logManager,
-                      IObserverManager observerManager, ScoringManager scoringManager, PlayerStrategy[] playerStrategies,
-                      int[] scores, List<List<String>> playerAutoMovements, Hand[] hands, Hand playingArea, Hand pack) {
+    public GameEngine(GameConfigurations config, Deck deck, CardManager cardManager, UIManager gameUI,
+                      ILogManager logManager, IObserverManager observerManager, ScoringManager scoringManager,
+                      PlayerStrategy[] playerStrategies, int[] scores) {
         this.config = config;
+        this.deck = deck;
         this.cardManager = cardManager;
         this.gameUI = gameUI;
         this.logManager = logManager;
@@ -32,44 +34,104 @@ public class GameEngine {
         this.scoringManager = scoringManager;
         this.playerStrategies = playerStrategies;
         this.scores = scores;
-        this.playerAutoMovements = playerAutoMovements;
-        this.hands = hands;
-        this.playingArea = playingArea;
-        this.pack = pack;
+        this.playerAutoMovements = new ArrayList<>();
+        this.hands = new Hand[config.NB_PLAYERS];
         this.autoIndexHands = new int[config.NB_PLAYERS];
+
+        initializeGame(); // Initialize the game as part of the constructor
+    }
+
+    private void initializeGame() {
+        initHands();
+        dealingOut();
+        setupPlayerAutoMovements();
+        setupCardLayout();
+    }
+
+    // Initializes player hands and the playing area
+    private void initHands() {
+        for (int i = 0; i < config.NB_PLAYERS; i++) {
+            hands[i] = new Hand(deck);
+        }
+        playingArea = new Hand(deck);
+        pack = deck.toHand(false);
+    }
+
+    // Deals cards to players based on the configuration
+    private void dealingOut() {
+        for (int i = 0; i < config.NB_PLAYERS; i++) {
+            String initialCardsKey = "players." + i + ".initialcards";
+            String initialCardsValue = config.properties.getProperty(initialCardsKey);
+            if (initialCardsValue == null) {
+                continue;
+            }
+            String[] initialCards = initialCardsValue.split(",");
+            for (String initialCard : initialCards) {
+                if (initialCard.length() <= 1) {
+                    continue;
+                }
+                Card card = cardManager.getCardFromList(cardManager.getPack().getCardList(), initialCard);
+                if (card != null) {
+                    card.removeFromHand(false);
+                    hands[i].insert(card, false);
+                }
+            }
+        }
+
+        for (int i = 0; i < config.NB_PLAYERS; i++) {
+            int cardsToDeal = config.NB_START_CARDS - hands[i].getNumberOfCards();
+            for (int j = 0; j < cardsToDeal; j++) {
+                if (pack.isEmpty())
+                    return;
+                Card dealt = cardManager.randomCard(cardManager.getPack().getCardList());
+                dealt.removeFromHand(false);
+                hands[i].insert(dealt, false);
+            }
+        }
+    }
+
+    // Sets up automatic player movements for testing or simulations
+    private void setupPlayerAutoMovements() {
+        String[] playerMovements = new String[config.NB_PLAYERS];
+        for (int i = 0; i < config.NB_PLAYERS; i++) {
+            playerMovements[i] = config.properties.getProperty("players." + i + ".cardsPlayed", "");
+        }
+
+        for (String movementString : playerMovements) {
+            List<String> movements = Arrays.asList(movementString.split(","));
+            playerAutoMovements.add(movements);
+        }
+    }
+
+    // Sets up the card layout in the UI
+    private void setupCardLayout() {
+        gameUI.setupCardLayout(hands, playingArea);
     }
 
     // Main game loop controlling the flow of the game
     public void playGame() {
-        gameUI.setStatus("Initializing...");  // Moved setStatus here
-
+        gameUI.setStatus("Initializing...");
         initScores();
         gameUI.initScore();
-
         int roundNumber = 1;
-        for (int i = 0; i < config.NB_PLAYERS; i++)
+        for (int i = 0; i < config.NB_PLAYERS; i++) {
             updateScore(i);
-
+        }
         logManager.addRoundInfoToLog(roundNumber);
         observerManager.notifyRoundStart(roundNumber);
-
         int nextPlayer = 0;
         while (roundNumber <= 4) {
             selected = null;
             boolean finishedAuto = false;
-
             if (config.isAuto) {
                 int nextPlayerAutoIndex = autoIndexHands[nextPlayer];
                 List<String> nextPlayerMovement = playerAutoMovements.get(nextPlayer);
                 String nextMovement = "";
-
                 if (nextPlayerMovement.size() > nextPlayerAutoIndex) {
                     nextMovement = nextPlayerMovement.get(nextPlayerAutoIndex);
                     nextPlayerAutoIndex++;
-
                     autoIndexHands[nextPlayer] = nextPlayerAutoIndex;
                     Hand nextHand = hands[nextPlayer];
-
                     selected = cardManager.applyAutoMovement(nextHand, nextMovement);
                     delay(config.delayTime);
                     if (selected != null) {
@@ -84,9 +146,8 @@ public class GameEngine {
             }
 
             if (!config.isAuto || finishedAuto) {
-                if (0 == nextPlayer) {
+                if (nextPlayer == 0) {
                     hands[0].setTouchEnabled(true);
-
                     gameUI.setStatus("Player 0 is playing. Please double click on a card to discard");
                     selected = null;
                     cardManager.dealACardToHand(hands[0]);
@@ -106,22 +167,18 @@ public class GameEngine {
                 delay(config.delayTime);
                 observerManager.notifyCardPlayed(nextPlayer, selected);
             }
-
             scores[nextPlayer] = scoringManager.calculateScoreForPlayer(hands[nextPlayer].getCardList());
             updateScore(nextPlayer);
             observerManager.notifyScoreUpdate(nextPlayer, scores[nextPlayer]);
             nextPlayer = (nextPlayer + 1) % config.NB_PLAYERS;
-
             if (nextPlayer == 0) {
                 roundNumber++;
                 logManager.addEndOfRoundToLog(scores);
-
                 if (roundNumber <= 4) {
                     logManager.addRoundInfoToLog(roundNumber);
                     observerManager.notifyRoundStart(roundNumber);
                 }
             }
-
             if (roundNumber > 4) {
                 calculateScoreEndOfRound();
             }
@@ -131,24 +188,20 @@ public class GameEngine {
         finalizeGame();
     }
 
-    // Reset all player scores to zero
     private void initScores() {
         Arrays.fill(scores, 0);
     }
 
-    // Calculates and updates scores for all players at the end of the game
     private void calculateScoreEndOfRound() {
         for (int i = 0; i < hands.length; i++) {
             scores[i] = scoringManager.calculateScoreForPlayer(hands[i].getCardList());
         }
     }
 
-    // Updates the score display for a specific player
     private void updateScore(int player) {
         gameUI.updateScore(player, scores[player]);
     }
 
-    // Set up card listeners for the human player's hand
     public void setupCardListeners() {
         CardListener cardListener = new CardAdapter() {
             public void leftDoubleClicked(Card card) {
@@ -159,22 +212,22 @@ public class GameEngine {
         hands[0].addCardListener(cardListener);
     }
 
-    // Finalize the game, calculate winners, and update UI
     private void finalizeGame() {
-        for (int i = 0; i < config.NB_PLAYERS; i++)
+        for (int i = 0; i < config.NB_PLAYERS; i++) {
             updateScore(i);
+        }
         int maxScore = Arrays.stream(scores).max().orElse(0);
         winners = new ArrayList<>();
-        for (int i = 0; i < config.NB_PLAYERS; i++)
-            if (scores[i] == maxScore)
+        for (int i = 0; i < config.NB_PLAYERS; i++) {
+            if (scores[i] == maxScore) {
                 winners.add(i);
-
+            }
+        }
         gameUI.showGameOver(winners);
         logManager.addEndOfGameToLog(scores, winners);
         observerManager.notifyGameOver(scores, winners);
     }
 
-    // Getters for scores and winners
     public int[] getScores() {
         return scores;
     }

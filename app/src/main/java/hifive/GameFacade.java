@@ -8,54 +8,48 @@ public class GameFacade {
     private final ILogManager logManager;
 
     public GameFacade(GameConfigurations config, Deck deck, CardManager cardManager, UIManager gameUI) {
-        this.logManager = new LogManager(); // Create a new instance
+        // Initialize the log manager
+        this.logManager = new LogManager();
+
+        // Initialize observer manager for observing game events
         IObserverManager observerManager = new ObserverManager();
-
-        // Initialize the game
-        GameInitializer gameInitializer = new GameInitializer(config, deck, cardManager, gameUI);
-        gameInitializer.initGame();
-
-        // Get initialized components
-        Hand[] hands = gameInitializer.getHands();
-        Hand playingArea = gameInitializer.getPlayingArea();
-        Hand pack = gameInitializer.getPack();
-        List<List<String>> playerAutoMovements = gameInitializer.getPlayerAutoMovements();
 
         // Create game components using the factory
         GameComponentFactory factory = new StandardGameComponentFactory();
+
+        // Set up the strategies for scoring and players
         List<ScoringStrategy> scoringStrategies = factory.createScoringStrategies(config);
         ScoringManager scoringManager = new ScoringManager(scoringStrategies);
         PlayerStrategy[] playerStrategies = factory.createPlayerStrategies(config);
 
-        // Initialize scores array
+        // Initialize scores array based on the number of players
         int[] scores = new int[config.NB_PLAYERS];
 
-        // Initialize the game engine
-        this.gameEngine = new GameEngine(config, cardManager, gameUI, logManager, observerManager,
-                scoringManager, playerStrategies, scores, playerAutoMovements, hands, playingArea, pack);
+        // Initialize the game engine, passing all necessary components
+        this.gameEngine = new GameEngine(config, deck, cardManager, gameUI, logManager, observerManager,
+                scoringManager, playerStrategies, scores);
 
-        // Set up card listeners for the human player
+        // Set up card listeners for the human player (player 0)
         gameEngine.setupCardListeners();
     }
 
-    // Start the game
-    // Start the game
+    // Starts the game by calling the game engine's playGame method
     public void startGame() {
         gameEngine.playGame();
     }
 
-    // Get the final scores
+    // Get the final scores after the game ends
     public int[] getScores() {
         return gameEngine.getScores();
     }
 
-    // Get the log result
-    public String getLogResult() {
-        return logManager.getLogResult();
-    }
-
-    // Get the list of winners
+    // Get the winners of the game based on the final scores
     public List<Integer> getWinners() {
         return gameEngine.getWinners();
+    }
+
+    // Get the log of game events for analysis or debugging
+    public String getLogResult() {
+        return logManager.getLogResult();
     }
 }
